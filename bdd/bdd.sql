@@ -317,3 +317,59 @@ CREATE TABLE administrateurs (
 INSERT INTO administrateurs (nom, email, mot_de_passe, role, derniere_connexion) VALUES
 ('Administrateur1', 'administrateur1@exemple.fr', 'administrateur1', 'Administrateur principal', '2017-12-28'),
 ('Administrateur2', 'administrateur2@exemple.fr', 'administrateur2', 'Administrateur secondaire', '2017-12-28');
+
+
+-- Liste des produits
+SELECT image, nom, prix
+FROM produits;
+
+-- Infos pour un produit
+SELECT
+    produits.image,
+    produits.nom AS nom_produit,
+    produits.prix,
+    produits.description,
+    categories.nom AS nom_categorie,
+    marques.nom AS nom_marque
+FROM
+    produits
+        INNER JOIN categories ON produits.categorie_id = categories.id
+        INNER JOIN marques ON produits.marque_id = marques.id
+WHERE produits.id = 5;
+
+-- Liste des produits par prix croissant
+SELECT image, nom, prix
+FROM produits
+ORDER BY prix ASC;
+
+-- Liste des produits par prix décroissant
+SELECT image, nom, prix
+FROM produits
+ORDER BY prix DESC;
+
+-- Liste des produits de la catégorie 1
+SELECT produits.image, produits.nom, produits.prix, categories.nom AS categorie
+FROM produits
+         INNER JOIN categories ON produits.categorie_id = categories.id
+WHERE categories.id = '1'
+ORDER BY categories.nom;
+
+-- Liste des produits de la marque 1
+SELECT produits.image, produits.nom, produits.prix, marques.nom AS marque
+FROM produits
+         INNER JOIN marques ON produits.marque_id = marques.id
+WHERE marques.id = '1'
+ORDER BY marques.nom;
+
+-- Liste des produits de la catégorie 1 et de la marque 2
+SELECT produits.image, produits.nom, produits.prix, categories.nom AS categorie, marques.nom AS marque
+FROM produits
+         INNER JOIN categories ON produits.categorie_id = categories.id
+         INNER JOIN marques ON produits.marque_id = marques.id
+WHERE categories.id = '1' AND marques.id = '2'
+ORDER BY categories.nom, marques.nom;
+
+-- Recherche par mot clé
+SELECT image, nom, prix
+FROM produits
+WHERE nom LIKE '%ordinateur%';
