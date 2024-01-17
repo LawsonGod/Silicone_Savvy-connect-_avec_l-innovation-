@@ -2,13 +2,16 @@
 global $dbh;
 session_start();
 
-global $stmt;
 include('connect.php');
 
 $msg = '';
 $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
+
+function isChecked($value, $postArray) {
+    return in_array($value, $postArray) ? 'checked' : '';
+}
 
 try {
     $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
@@ -23,24 +26,20 @@ try {
 
     if (isset($_POST['keyword']) && !empty($_POST['keyword'])) {
         $keyword = '%' . $_POST['keyword'] . '%';
-        $conditions[] = "nom LIKE :keyword";
-        $params[':keyword'] = $keyword;
+        $conditions[] = "nom LIKE ?";
+        $params[] = $keyword;
     }
 
     if (!empty($filtreMarques)) {
-        $marquesPlaceholder = implode(', ', array_fill(0, count($filtreMarques), ':marque'));
-        $sql .= ' AND marque_id IN (' . $marquesPlaceholder . ')';
-        foreach ($filtreMarques as $key => $value) {
-            $params[":marque$key"] = $value;
-        }
+        $marquesPlaceholder = implode(', ', array_fill(0, count($filtreMarques), '?'));
+        $conditions[] = "marque_id IN ($marquesPlaceholder)";
+        $params = array_merge($params, $filtreMarques);
     }
 
     if (!empty($filtreCategories)) {
-        $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), ':categorie'));
-        $sql .= ' AND categorie_id IN (' . $categoriesPlaceholder . ')';
-        foreach ($filtreCategories as $key => $value) {
-            $params[":categorie$key"] = $value;
-        }
+        $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), '?'));
+        $conditions[] = "categorie_id IN ($categoriesPlaceholder)";
+        $params = array_merge($params, $filtreCategories);
     }
 
     if (!empty($conditions)) {
@@ -64,11 +63,7 @@ try {
             throw new PDOException("La préparation de la requête a échoué.");
         }
 
-        foreach ($params as $paramName => $paramValue) {
-            $stmt->bindParam($paramName, $paramValue);
-        }
-
-        $stmt->execute();
+        $stmt->execute($params);
     } catch (PDOException $e) {
         echo "Erreur : " . $e->getMessage();
     }
@@ -119,30 +114,29 @@ $dbh = null;
                 <div class="form-group mb-2">
                     <select id="tri" name="tri" class="form-control">
                         <option value="">Par défaut</option>
-                        <option value="asc">Croissant</option>
-                        <option value="desc">Décroissant</option>
+                        <option value="asc" <?php echo $orderBy == 'asc' ? 'selected' : ''; ?>>Croissant</option>
+                        <option value="desc" <?php echo $orderBy == 'desc' ? 'selected' : ''; ?>>Décroissant</option>
                     </select>
                 </div>
 
                 <div class="form-group mb-2">
-                    <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Rechercher par mot clé">
+                    <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Rechercher par mot clé" value="<?php echo isset($_POST['keyword']) ? $_POST['keyword'] : ''; ?>">
                 </div>
 
                 <h4>Catégories</h4>
                 <?php foreach ($categories as $categorie): ?>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="categories[]" value="<?php echo $categorie['id']; ?>">
+                        <input class="form-check-input" type="checkbox" name="categories[]" value="<?php echo $categorie['id']; ?>" <?php echo isChecked($categorie['id'], $filtreCategories); ?>>
                         <label class="form-check-label">
                             <?php echo htmlspecialchars($categorie['nom']); ?>
                         </label>
                     </div>
                 <?php endforeach; ?>
 
-                <!-- Filtres par marque -->
                 <h4>Marques</h4>
                 <?php foreach ($marques as $marque): ?>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="marques[]" value="<?php echo $marque['id']; ?>">
+                        <input class="form-check-input" type="checkbox" name="marques[]" value="<?php echo $marque['id']; ?>" <?php echo isChecked($marque['id'], $filtreMarques); ?>>
                         <label class="form-check-label">
                             <?php echo htmlspecialchars($marque['nom']); ?>
                         </label>
@@ -150,6 +144,7 @@ $dbh = null;
                 <?php endforeach; ?>
 
                 <button type="submit" class="btn btn-primary mt-2">Rechercher et Filtrer</button>
+                <a href='index.php' class='btn btn-secondary mt-2'>Réinitialiser</a>
             </form>
         </div>
 
