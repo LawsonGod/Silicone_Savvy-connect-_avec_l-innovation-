@@ -1,39 +1,69 @@
 <?php
-require_once "./inc/outils.php";
+    global $dbh;
+    session_start();
+    include('connect.php');
 
-session_start();
-$role = isset($_SESSION["role"]) ? $_SESSION["role"] : 'anonyme';
+    $msg = '';
+    $orderBy = '';
 
-try {
-    $dbh = new PDO('mysql:host=127.0.0.1;dbname=geographie;port=3306;charset=utf8mb4', 'marco', 'polo');
-    $stmt = $dbh->query('SELECT * FROM pays');
-    $les_pays = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $nb_pays = count($les_pays);
+    if (isset($_POST['tri'])) {
+        $orderBy = $_POST['tri'];
+    }
+
+    $sql = 'SELECT image, nom, prix FROM produits';
+    if ($orderBy == 'asc') {
+        $sql .= ' ORDER BY prix ASC';
+    } elseif ($orderBy == 'desc') {
+        $sql .= ' ORDER BY prix DESC';
+    }
+
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+
+    $msg .= '<div class="product-grid">';
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $image = $row['image'];
+        $nom = $row['nom'];
+        $prix = $row['prix'];
+
+        $msg .= '<div class="product">';
+        $msg .= "<img src='$image' alt='$nom'>";
+        $msg .= "<h3>$nom</h3>";
+        $msg .= "<p>Prix : $prix €</p>";
+        $msg .= '</div>';
+    }
+    $msg .= '</div>';
+
     $dbh = null;
-} catch (Exception $e) {
-    $message = $e->getMessage();
-    $feedback = alerte($message, 'alert-danger');
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SiliconeSavvy</title>
-    <!-- Bootstrap 5.1 CSS -->
+    <title>Silicone Savvy</title>
     <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <div class="jumbotron text-center">
-        <h1>Accueil du site SiliconeSavvy</h1>
-    </div>
+<div class="jumbotron text-center">
+    <h1>Accueil du site SiliconeSavvy</h1>
+</div>
 
-
-
-
-
+<div class="container">
+    <h2>Liste des Produits</h2>
+    <form method="post">
+        <label for="tri">Trier par prix :</label>
+        <select id="tri" name="tri">
+            <option value="asc">Croissant</option>
+            <option value="desc">Décroissant</option>
+        </select>
+        <input type="submit" value="Trier">
+    </form>
+    <?php
+    echo $msg;
+    ?>
+</div>
 </body>
+<!-- <?php echo $sql; ?> -->
 </html>
