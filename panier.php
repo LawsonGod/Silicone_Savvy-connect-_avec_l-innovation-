@@ -47,6 +47,7 @@ if (!empty($_SESSION['panier'])) {
     <title>Panier</title>
     <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
 </head>
+<?php include('header_nav.php');?>
 <body>
 <div class="container">
     <h1 class="my-4">Votre Panier</h1>
@@ -70,5 +71,6 @@ if (!empty($_SESSION['panier'])) {
     <a href="index.php" class="btn btn-primary">Retour à la page d'accueil</a>
 </div>
 </body>
+<?php include('footer.php');?>
 </html>
 
