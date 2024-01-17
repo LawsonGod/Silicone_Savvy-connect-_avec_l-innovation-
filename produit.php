@@ -27,6 +27,7 @@
     <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
 </head>
+<?php include('header_nav.php');?>
 <body>
 <div class="container mt-4">
     <?php if ($produit): ?>
@@ -66,6 +67,5 @@
     </div>
 <?php endif; ?>
 </body>
-
-
+<?php include('footer.php');?>
 </html>

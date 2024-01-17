@@ -1,6 +1,8 @@
 <?php
 global $dbh;
 session_start();
+
+global $stmt;
 include('connect.php');
 
 $msg = '';
@@ -8,73 +10,95 @@ $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 
-$stmt_cat = $dbh->query('SELECT id, nom FROM categories');
-$categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
+    $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
 
-$stmt_marque = $dbh->query('SELECT id, nom FROM marques');
-$marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
+    $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
+    $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-$sql = 'SELECT id, image, nom, prix FROM produits';
-$conditions = [];
-$params = [];
+    $sql = 'SELECT id, image, nom, prix FROM produits';
+    $conditions = [];
+    $params = [];
 
-// Filtre par mot-clé
-if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
-    $keyword = '%' . $_GET['keyword'] . '%';
-    $conditions[] = "nom LIKE :keyword";
-    $params[':keyword'] = $keyword;
-}
-
-if (!empty($filtreMarques)) {
-    $marquesPlaceholder = implode(',', array_fill(0, count($filtreMarques), '?'));
-    $conditions[] = "marque_id IN ($marquesPlaceholder)";
-    $params = array_merge($params, $filtreMarques);
-}
-
-if (!empty($filtreCategories)) {
-    $categoriesPlaceholder = implode(',', array_fill(0, count($filtreCategories), '?'));
-    $conditions[] = "categorie_id IN ($categoriesPlaceholder)";
-    $params = array_merge($params, $filtreCategories);
-}
-
-if (!empty($conditions)) {
-    $sql .= ' WHERE ' . implode(' AND ', $conditions);
-}
-
-if (isset($_POST['tri'])) {
-    $orderBy = $_POST['tri'];
-    if ($orderBy == 'asc') {
-        $sql .= ' ORDER BY prix ASC';
-    } elseif ($orderBy == 'desc') {
-        $sql .= ' ORDER BY prix DESC';
+    if (isset($_POST['keyword']) && !empty($_POST['keyword'])) {
+        $keyword = '%' . $_POST['keyword'] . '%';
+        $conditions[] = "nom LIKE :keyword";
+        $params[':keyword'] = $keyword;
     }
-} else {
-    $sql .= ' ORDER BY id ASC';
+
+    if (!empty($filtreMarques)) {
+        $marquesPlaceholder = implode(', ', array_fill(0, count($filtreMarques), ':marque'));
+        $sql .= ' AND marque_id IN (' . $marquesPlaceholder . ')';
+        foreach ($filtreMarques as $key => $value) {
+            $params[":marque$key"] = $value;
+        }
+    }
+
+    if (!empty($filtreCategories)) {
+        $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), ':categorie'));
+        $sql .= ' AND categorie_id IN (' . $categoriesPlaceholder . ')';
+        foreach ($filtreCategories as $key => $value) {
+            $params[":categorie$key"] = $value;
+        }
+    }
+
+    if (!empty($conditions)) {
+        $sql .= ' WHERE ' . implode(' AND ', $conditions);
+    }
+
+    if (isset($_POST['tri'])) {
+        $orderBy = $_POST['tri'];
+        if ($orderBy == 'asc') {
+            $sql .= ' ORDER BY prix ASC';
+        } elseif ($orderBy == 'desc') {
+            $sql .= ' ORDER BY prix DESC';
+        }
+    } else {
+        $sql .= ' ORDER BY id ASC';
+    }
+
+    $stmt = $dbh->prepare($sql);
+    try {
+        if (!$stmt) {
+            throw new PDOException("La préparation de la requête a échoué.");
+        }
+
+        foreach ($params as $paramName => $paramValue) {
+            $stmt->bindParam($paramName, $paramValue);
+        }
+
+        $stmt->execute();
+    } catch (PDOException $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
+
+    if ($stmt->rowCount() === 0) {
+        $message = '<p>Aucun résultat trouvé.</p>';
+    } else {
+        $message = '<div class="product-grid">';
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $product_id = $row['id'];
+            $image = $row['image'];
+            $nom = $row['nom'];
+            $prix = $row['prix'];
+
+            $message .= '<div class="product">';
+            $message .= "<a href='produit.php?id=$product_id'>";
+            $message .= "<img src='$image' alt='$nom'>";
+            $message .= "<h3>$nom</h3>";
+            $message .= "<p>Prix : $prix €</p>";
+            $message .= '</a>';
+            $message .= '</div>';
+        }
+        $message .= '</div>';
+    }
+} catch (PDOException $e) {
+    $message = 'Une erreur est survenue lors de la récupération des données : ' . $e->getMessage();
 }
-
-$stmt = $dbh->prepare($sql);
-$stmt->execute($params);
-
-$msg .= '<div class="product-grid">';
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $product_id = $row['id'];
-    $image = $row['image'];
-    $nom = $row['nom'];
-    $prix = $row['prix'];
-
-    $msg .= '<div class="product">';
-    $msg .= "<a href='produit.php?id=$product_id'>";
-    $msg .= "<img src='$image' alt='$nom'>";
-    $msg .= "<h3>$nom</h3>";
-    $msg .= "<p>Prix : $prix €</p>";
-    $msg .= '</a>';
-    $msg .= '</div>';
-}
-$msg .= '</div>';
 
 $dbh = null;
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -84,11 +108,8 @@ $dbh = null;
     <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
 </head>
+<?php include('header_nav.php');?>
 <body>
-<div class="jumbotron text-center">
-    <h1>Accueil du site SiliconeSavvy</h1>
-</div>
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -134,11 +155,10 @@ $dbh = null;
 
         <div class="col-md-8">
             <h2>Liste des Produits</h2>
-            <?php echo $msg; ?>
+            <?php echo $message; ?>
         </div>
     </div>
 </div>
 </body>
+<?php include('footer.php');?>
 </html>
-
-
