@@ -2,7 +2,7 @@
 global $dbh;
 session_start();
 
-include('connect.php');
+include('connect_God.php');
 
 $msg = '';
 $orderBy = '';
@@ -51,7 +51,7 @@ try {
             $conditions[] = "prix >= ? AND prix <= ?";
             $params[] = $prixRange[0];
             $params[] = $prixRange[1];
-        } elseif ($prixRange[0] == '1000') {
+        } elseif ($tranchePrix == '1000') {
             $conditions[] = "prix >= ?";
             $params[] = 1000;
         }
@@ -60,6 +60,10 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
+
+    // echo "<pre>";
+    // print_r($params);
+    // echo "</pre>";
 
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
@@ -138,6 +142,7 @@ $dbh = null;
                     <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Rechercher par mot clé" value="<?php echo isset($_POST['keyword']) ? $_POST['keyword'] : ''; ?>">
                 </div>
 
+                    <!-- Section du filtre tranche de prix -->
                 <div class="form-group mb-2">
                     <label for="tranchePrix" class="form-label">Tranche de Prix:</label>
                     <select id="tranchePrix" name="tranchePrix" class="form-select">
@@ -145,10 +150,10 @@ $dbh = null;
                         <option value="0-100" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '0-100') ? 'selected' : ''; ?>>0 - 100 €</option>
                         <option value="100-500" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '100-500') ? 'selected' : ''; ?>>100 - 500 €</option>
                         <option value="500-1000" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '500-1000') ? 'selected' : ''; ?>>500 - 1000 €</option>
-                        <option value="1000-" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '1000-') ? 'selected' : ''; ?>>Plus de 1000 €</option>
+                        <option value="1000" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '1000') ? 'selected' : ''; ?>>Plus de 1000 €</option>
                     </select>
                 </div>
-
+                    <!-- **************************** -->
 
                 <h4>Catégories</h4>
                 <?php foreach ($categories as $categorie): ?>

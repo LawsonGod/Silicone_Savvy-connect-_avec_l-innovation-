@@ -1,0 +1,7 @@
+{
+  "client_bd":"/Applications/MAMP/Library/bin/mysql",
+  "login_bd":"root",
+  "adresse_sgbd":"127.0.0.1",
+  "port_sgbd":"8889",
+  "dossier_site":"/Applications/MAMP/htdocs/Silicone_Savvy-connect-_avec_l-innovation-"
+}
