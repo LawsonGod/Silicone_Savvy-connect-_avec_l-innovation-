@@ -22,7 +22,11 @@ try {
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = 'SELECT id, image, nom, prix FROM produits';
+    $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
+    COALESCE(AVG(evaluations.note), 0) AS note_moyenne 
+    FROM produits 
+    LEFT JOIN evaluations ON produits.id = evaluations.produit_id';
+
     $conditions = [];
     $params = [];
 
@@ -60,6 +64,7 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix';
 
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
@@ -71,6 +76,18 @@ try {
     } else {
         $sql .= ' ORDER BY id ASC';
     }
+
+   
+
+    if (isset($_POST['triEvaluation'])) {
+        $triEvaluation = $_POST['triEvaluation'];
+        if ($triEvaluation == 'note_asc') {
+            $sql .= ' ORDER BY note_moyenne ASC';
+        } elseif ($triEvaluation == 'note_desc') {
+            $sql .= ' ORDER BY note_moyenne DESC';
+        }
+    }
+    
 
     $stmt = $dbh->prepare($sql);
     try {
