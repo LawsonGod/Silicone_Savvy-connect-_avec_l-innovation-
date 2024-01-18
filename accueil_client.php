@@ -1,6 +1,9 @@
 <?php
 global $dbh;
-session_start();
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 include('connect.php');
 

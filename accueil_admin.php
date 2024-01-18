@@ -1,6 +1,18 @@
 <?php
 global $dbh;
-session_start();
+
+if (isset($_COOKIE["admin_username"])) {
+    session_start();
+    $_SESSION["user_type"] = "admin";
+    $_SESSION["nom"] = $_COOKIE["admin_username"];
+} else {
+    header("Location: connexion.php");
+    exit();
+}
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 include('connect.php');
 
