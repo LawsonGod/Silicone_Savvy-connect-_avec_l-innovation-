@@ -31,3 +31,39 @@ h1 {
     color: #e67e22;
     font-weight: bold;
 }
+.icones_sociaux {
+    max-height: 36px;
+    margin: 5px;
+}
+.icones_sociaux:hover{
+    opacity: 0.7;
+}
+
+.appstore {
+    max-height: 70px;
+    margin: 5px;
+}
+.appstore:hover{
+    opacity: 0.7;
+}
+.googleplay {
+    max-height: 70px;
+    margin: 5px;
+}
+.googleplay:hover{
+    opacity: 0.7;
+}
+.codeqr {
+    max-height: 100px;
+    margin: 5px;
+}
+.codeqr:hover{
+    opacity: 0.7;
+}
+.trustpilot {
+    max-height: 100px;
+    margin: 5px;
+}
+.trustpilot:hover{
+    opacity: 0.7;
+}
