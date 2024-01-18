@@ -8,6 +8,8 @@ $msg = '';
 $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
+$tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
+
 
 function isChecked($value, $postArray) {
     return in_array($value, $postArray) ? 'checked' : '';
@@ -40,6 +42,19 @@ try {
         $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), '?'));
         $conditions[] = "categorie_id IN ($categoriesPlaceholder)";
         $params = array_merge($params, $filtreCategories);
+    }
+
+    // Gestion de la condition de filtre par tranche de prix
+    if (!empty($tranchePrix)) {
+        $prixRange = explode('-', $tranchePrix);
+        if (count($prixRange) == 2) {
+            $conditions[] = "prix >= ? AND prix <= ?";
+            $params[] = $prixRange[0];
+            $params[] = $prixRange[1];
+        } elseif ($prixRange[0] == '1000') {
+            $conditions[] = "prix >= ?";
+            $params[] = 1000;
+        }
     }
 
     if (!empty($conditions)) {
@@ -115,6 +130,18 @@ $dbh = null;
                 <div class="form-group mb-2">
                     <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Rechercher par mot clé" value="<?php echo isset($_POST['keyword']) ? $_POST['keyword'] : ''; ?>">
                 </div>
+
+                <div class="form-group mb-2">
+                    <label for="tranchePrix" class="form-label">Tranche de Prix:</label>
+                    <select id="tranchePrix" name="tranchePrix" class="form-select">
+                        <option value="">Tous les prix</option>
+                        <option value="0-100" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '0-100') ? 'selected' : ''; ?>>0 - 100 €</option>
+                        <option value="100-500" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '100-500') ? 'selected' : ''; ?>>100 - 500 €</option>
+                        <option value="500-1000" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '500-1000') ? 'selected' : ''; ?>>500 - 1000 €</option>
+                        <option value="1000-" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '1000-') ? 'selected' : ''; ?>>Plus de 1000 €</option>
+                    </select>
+                </div>
+
 
                 <h4>Catégories</h4>
                 <?php foreach ($categories as $categorie): ?>
