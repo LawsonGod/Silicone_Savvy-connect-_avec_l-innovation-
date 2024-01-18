@@ -165,6 +165,19 @@ $dbh = null;
 
                 <button type="submit" class="btn btn-primary mt-2">Rechercher et Filtrer</button>
                 <a href='index.php' class='btn btn-secondary mt-2'>Réinitialiser</a>
+                <br>
+                <br>
+
+                <div class="form-group mb-2">
+                    <label for="triEvaluation" class="form-label">Tri par Évaluation:</label>
+                    <select id="triEvaluation" name="triEvaluation" class="form-select">
+                        <option value="">Choisissez un tri</option>
+                        <option value="note_asc">Évaluation : Croissante</option>
+                    <option value="note_desc">Évaluation : Décroissante</option>
+                    <option value="positives">Avis Positifs (> 3 étoiles)</option>
+                    <option value="negatives">Avis Négatifs (<= 3 étoiles)</option>
+                    </select>
+                </div>
             </form>
         </div>
 
