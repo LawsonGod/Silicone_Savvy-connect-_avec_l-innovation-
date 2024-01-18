@@ -302,15 +302,82 @@ INSERT INTO expeditions (commande_id, methode, cout, date_livraison_estimee) VAL
 ( '10', 'Eco', '15', '2023-01-15');
 
 CREATE TABLE evaluations (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    utilisateur_id INT NOT NULL,
-    produit_id INT NOT NULL,
-    note INT NOT NULL DEFAULT 0,
-    commentaire TEXT,
-    date_publication DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (utilisateur_id) REFERENCES clients(id),
-    FOREIGN KEY (produit_id) REFERENCES produits(id)
+id INT PRIMARY KEY AUTO_INCREMENT,
+utilisateur_id INT NOT NULL,
+produit_id INT NOT NULL,
+note INT NOT NULL DEFAULT 0 CHECK (note >= 0 AND note <= 5),
+commentaire TEXT,
+date_publication DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (utilisateur_id) REFERENCES clients(id),
+FOREIGN KEY (produit_id) REFERENCES produits(id)
 ) ENGINE InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO evaluations (utilisateur_id, produit_id, note, commentaire)
+VALUES
+    (1, 1, 5, 'Excellent produit, fortement recommandé !'),
+    (2, 2, 4, 'Très bon, mais légèrement cher.'),
+    (3, 3, 3, 'Moyen, répond aux attentes.'),
+    (4, 4, 2, 'Peut-être amélioré, manque certaines fonctionnalités.'),
+    (5, 5, 1, 'Pas satisfait de la qualité.'),
+    (6, 6, 0, 'Mauvaise expérience, ne recommande pas.'),
+    (7, 7, 4, 'Bon produit, répond à mes besoins.'),
+    (8, 8, 3, 'Assez bon, mais pourrait être mieux.'),
+    (9, 9, 5, 'Parfait, dépasse mes attentes!'),
+    (10, 10, 2, 'Pas totalement satisfait.'),
+    (11, 11, 4, 'Très bon rapport qualité-prix.'),
+    (12, 12, 1, 'Déçu par la qualité.'),
+    (13, 13, 5, 'Excellent, je recommande vivement.'),
+    (14, 14, 3, 'Correct, mais rien d\'exceptionnel.'),
+    (15, 15, 2, 'Peut faire mieux.'),
+    (16, 16, 4, 'Très pratique et efficace.'),
+    (17, 17, 1, 'Ne répond pas à mes attentes.'),
+    (18, 18, 5, 'Fantastique, au-dessus de la norme!'),
+    (19, 19, 3, 'Moyen, mais acceptable.'),
+    (20, 20, 4, 'Bonne qualité, satisfait de mon achat.'),
+    (21, 21, 2, 'Qualité inférieure à ce que j\'attendais.'),
+    (22, 22, 4, 'Bon achat, je suis content.'),
+    (23, 23, 1, 'Pas à la hauteur de mes attentes.'),
+    (24, 24, 3, 'Passable, mais peut être amélioré.'),
+    (25, 25, 5, 'Superbe! Très satisfait.'),
+    (26, 26, 2, 'Médiocre, attendait mieux.'),
+    (27, 27, 4, 'Très bon produit, fonctionne bien.'),
+    (28, 28, 3, 'Assez bon, mais a des limites.'),
+    (29, 29, 1, 'Très décevant, ne recommande pas.'),
+    (30, 30, 5, 'Exceptionnel, hautement recommandé!'),
+    (1, 31, 4, 'Très bon, fiable et efficace.'),
+    (2, 32, 2, 'Pas totalement convaincu.'),
+    (3, 33, 3, 'Correct, mais pas extraordinaire.'),
+    (4, 34, 1, 'Insatisfaisant, beaucoup de problèmes.'),
+    (5, 35, 5, 'Excellent choix, très heureux avec.'),
+    (6, 36, 4, 'Bonne qualité et performance.'),
+    (7, 37, 3, 'Assez satisfaisant pour le prix.'),
+    (8, 38, 2, 'Pourrait être amélioré sous certains aspects.'),
+    (9, 39, 1, 'Déçu, ne correspond pas à mes attentes.'),
+    (10, 40, 5, 'Parfait en tous points!'),
+    (11, 41, 4, 'Très satisfaisant, recommandé.'),
+    (12, 42, 3, 'Bon, mais a ses limites.'),
+    (13, 43, 2, 'Moyen, peut être mieux.'),
+    (14, 44, 1, 'Pas impressionné, manque de qualité.'),
+    (15, 45, 5, 'Excellent, dépasse les attentes.'),
+    (16, 46, 4, 'Très bien, répond aux besoins.'),
+    (17, 47, 3, 'Acceptable, mais pas extraordinaire.'),
+    (18, 48, 2, 'Peut mieux faire, assez basique.'),
+    (19, 49, 1, 'Insatisfaisant, ne recommande pas.'),
+    (20, 50, 5, 'Exceptionnel, qualité supérieure.'),
+    (21, 51, 4, 'Très bon, solide et fiable.'),
+    (22, 52, 3, 'Correct, mais sans plus.'),
+    (23, 53, 2, 'Moyen, nécessite des améliorations.'),
+    (24, 54, 1, 'Décevant, attendait mieux.'),
+    (25, 55, 5, 'Parfait, hautement recommandé.'),
+    (26, 56, 4, 'Bonne qualité, très fonctionnel.'),
+    (27, 57, 3, 'Assez bon, mais pas le meilleur.'),
+    (28, 58, 2, 'Peut-être amélioré, fonctionnalités limitées.'),
+    (29, 59, 1, 'Peu satisfaisant, qualité médiocre.'),
+    (30, 60, 5, 'Excellent, très efficace.'),
+    (1, 61, 4, 'Très bon, recommande.'),
+    (2, 62, 3, 'Bon, mais pourrait être amélioré.'),
+    (3, 63, 2, 'Moyen, pas à la hauteur des attentes.');
+
 
 CREATE TABLE paniers (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -333,13 +400,36 @@ CREATE TABLE paniers_produits (
 
 
 CREATE TABLE promotions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    produit_id INT NOT NULL,
-    pourcentage_remise INT NOT NULL DEFAULT 0,
-    date_debut DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    date_fin DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (produit_id) REFERENCES produits(id)
+id INT PRIMARY KEY AUTO_INCREMENT,
+produit_id INT NOT NULL,
+pourcentage_remise INT NOT NULL DEFAULT 0 CHECK (pourcentage_remise >= 5 AND pourcentage_remise <= 60),
+date_debut DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+date_fin DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (produit_id) REFERENCES produits(id)
 ) ENGINE InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO promotions (produit_id, pourcentage_remise, date_debut, date_fin)
+VALUES
+    (1, 10, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (2, 15, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (3, 20, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (4, 25, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (5, 30, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (6, 35, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (7, 40, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (8, 45, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (9, 50, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (10, 55, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (11, 60, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (12, 12, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (13, 18, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (14, 22, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (15, 27, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (16, 33, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (17, 37, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (18, 43, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (19, 47, '2024-01-01 00:00:00', '2024-02-01 00:00:00'),
+    (20, 53, '2024-01-01 00:00:00', '2024-02-01 00:00:00');
 
 CREATE TABLE notifications (
     id INT PRIMARY KEY AUTO_INCREMENT,
