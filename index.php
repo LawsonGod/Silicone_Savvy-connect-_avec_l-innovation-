@@ -2,7 +2,7 @@
 global $dbh;
 session_start();
 
-include('connect_God.php');
+include('connect.php');
 
 $msg = '';
 $orderBy = '';
@@ -111,8 +111,8 @@ $dbh = null;
 ?>
 <!DOCTYPE html>
 <?php include('head.php');?>
-<?php include('header_nav.php');?>
 <body>
+<?php include('header_nav.php');?>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -175,5 +175,6 @@ $dbh = null;
     </div>
 </div>
 </body>
+<?php include('script_jquery.php'); ?>
 <?php include('footer.php');?>
 </html>

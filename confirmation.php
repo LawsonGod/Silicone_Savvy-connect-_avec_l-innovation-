@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Initialize the $message variable
 $message = "";
 
 if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {

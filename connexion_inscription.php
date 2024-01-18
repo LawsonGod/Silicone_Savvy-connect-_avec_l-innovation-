@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <?php include('head.php');?>
-<?php include('header_nav.php');?>
 <body>
+<?php include('header_nav.php');?>
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
@@ -63,5 +63,6 @@
     });
 </script>
 </body>
+<?php include('script_jquery.php'); ?>
 <?php include('footer.php');?>
 </html>

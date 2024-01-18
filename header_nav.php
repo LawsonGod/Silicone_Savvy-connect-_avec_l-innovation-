@@ -1,6 +1,16 @@
 <?php
 global $dbh;
 require 'connect.php';
+echo '<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Silicone Savvy</title>
+    <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>';
 echo '
 <header class="bg-dark text-white py-4">
     <div class="container">
@@ -35,18 +45,15 @@ echo '
                     Catégories
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategories">';
-
 try {
     $stmt = $dbh->prepare("SELECT id, nom FROM categories");
     $stmt->execute();
-
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo '<li><a class="dropdown-item" href="categorie.php?cat_id=' . $row['id'] . '">' . htmlspecialchars($row['nom']) . '</a></li>';
     }
 } catch (PDOException $e) {
     echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
 }
-
 echo '            </ul>
                 </li>
                 <li class="nav-item">
@@ -61,25 +68,3 @@ echo '            </ul>
 </nav>
 <div id="categorie-info"></div>';
 ?>
-<script>
-    $(document).ready(function() {
-        $(".nav-item").hover(function() {
-            var categorie = $(this).find("a.nav-link").text();
-
-            if (categorie === 'Catégories') {
-                $.ajax({
-                    url: "get_marques.php",
-                    method: "POST",
-                    data: {categorie: categorie},
-                    success: function(response) {
-                        $("#categorie-info").html(response);
-                    }
-                });
-            }
-        }, function() {
-            if ($(this).find("a.nav-link").text() === 'Catégories') {
-                $("#categorie-info").empty();
-            }
-        });
-    });
-</script>
