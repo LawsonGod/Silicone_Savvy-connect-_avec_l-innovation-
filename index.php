@@ -2,7 +2,7 @@
 global $dbh;
 session_start();
 
-include('connect.php');
+include('connect_God.php');
 
 $msg = '';
 $orderBy = '';
@@ -138,7 +138,7 @@ $dbh = null;
                         <option value="0-100" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '0-100') ? 'selected' : ''; ?>>0 - 100 €</option>
                         <option value="100-500" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '100-500') ? 'selected' : ''; ?>>100 - 500 €</option>
                         <option value="500-1000" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '500-1000') ? 'selected' : ''; ?>>500 - 1000 €</option>
-                        <option value="1000-" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '1000-') ? 'selected' : ''; ?>>Plus de 1000 €</option>
+                        <option value="1000" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '1000') ? 'selected' : ''; ?>>Plus de 1000 €</option>
                     </select>
                 </div>
 
