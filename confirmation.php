@@ -13,14 +13,7 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Silicone Savvy</title>
-    <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
-</head>
+<?php include('head.php');?>
 <?php include('header_nav.php');?>
 <body class="bg-light">
 <div class="container mt-5">

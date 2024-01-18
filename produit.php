@@ -21,12 +21,7 @@
 
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <title>Détails du Produit</title>
-    <link href="./styles/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
-</head>
+<?php include('head.php');?>
 <?php include('header_nav.php');?>
 <body>
 <div class="container mt-4">

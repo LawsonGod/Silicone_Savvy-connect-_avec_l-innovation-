@@ -10,8 +10,8 @@
             </div>
             <div class="col-md-3">
                 <div class="text-end">
-                    <a href="#" class="text-white mx-2"><i class="fas fa-shopping-cart"></i> Panier (0)</a>
-                    <a href="#" class="text-white mx-2"><i class="fas fa-user"></i> Mon Compte</a>
+                    <a href="#" class="text-white mx-2"><i class="fa-solid fa-cart-shopping"></i> Panier (0)</a>
+                    <a href="#" class="text-white mx-2"><i class="fa-regular fa-user"></i> Mon Compte</a>
                 </div>
             </div>
         </div>
@@ -25,16 +25,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Accueil</a>
+                        <a class="nav-link" href="#"><i class="fa-solid fa-house"></i> Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Catégories</a>
+                        <a class="nav-link" href="#"><i class="fa-solid fa-bars"></i> Catégories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Nouveautés</a>
+                        <a class="nav-link" href="#"><i class="fa-solid fa-bullhorn"></i> Nouveautés</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Promotions</a>
+                        <a class="nav-link" href="#"><i class="fa-solid fa-bolt"></i> Ventes flash</a>
                     </li>
                 </ul>
             </div>
