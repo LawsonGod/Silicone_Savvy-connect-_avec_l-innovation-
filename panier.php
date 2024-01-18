@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('connect.php');
+include('connect_God.php');
 
 function calculerTotalPanier() {
     $total = 0;
