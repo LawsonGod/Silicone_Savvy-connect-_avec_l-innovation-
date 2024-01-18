@@ -11,7 +11,7 @@ if (isset($_POST['new_email']) && isset($_POST['new_password']) && isset($_POST[
     $telephone = $_POST['telephone'];
 
     try {
-        $bdd = new PDO('mysql:host=localhost;dbname=votre_base_de_donnees;charset=utf8', 'votre_utilisateur', 'votre_mot_de_passe');
+        $bdd = new PDO('mysql:host=localhost;dbname=projetphp;charset=utf8', 'root', '');
     } catch (Exception $e) {
         die('Erreur : ' . $e->getMessage());
     }
@@ -34,6 +34,7 @@ if (isset($_POST['new_email']) && isset($_POST['new_password']) && isset($_POST[
         if ($insertQuery) {
             $_SESSION['user_type'] = 'client';
             $_SESSION['email'] = $new_email;
+            $_SESSION['nom'] = $nom;
             header('Location: accueil_client.php');
             exit();
         } else {
