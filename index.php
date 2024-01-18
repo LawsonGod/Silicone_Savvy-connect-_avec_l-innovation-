@@ -44,6 +44,7 @@ try {
         $params = array_merge($params, $filtreCategories);
     }
 
+    // Gestion de la condition de filtre par tranche de prix
     if (!empty($tranchePrix)) {
         $prixRange = explode('-', $tranchePrix);
         if (count($prixRange) == 2) {

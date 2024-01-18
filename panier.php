@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('connect.php');
+include('connect_God.php');
 
 function calculerTotalPanier() {
     $total = 0;
@@ -41,8 +41,8 @@ if (!empty($_SESSION['panier'])) {
 
 <!DOCTYPE html>
 <?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
+<body>
 <div class="container">
     <h1 class="my-4">Votre Panier</h1>
     <table class="table">
@@ -65,7 +65,6 @@ if (!empty($_SESSION['panier'])) {
     <a href="index.php" class="btn btn-primary">Retour à la page d'accueil</a>
 </div>
 </body>
-<?php include('script_jquery.php'); ?>
 <?php include('footer.php');?>
 </html>
 
