@@ -2,7 +2,8 @@
 global $dbh;
 session_start();
 
-include('connect.php');
+include('connect_God.php');
+
 
 $msg = '';
 $orderBy = '';
@@ -10,6 +11,7 @@ $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
 $filtreNote = isset($_POST['filtreNote']) ? $_POST['filtreNote'] : '';
+$tranchePromo = isset($_POST['tranchePromo']) ? $_POST['tranchePromo'] : '';
 
 function isChecked($value, $postArray) {
     return in_array($value, $postArray) ? 'checked' : '';
@@ -27,11 +29,12 @@ try {
 
     $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
     COALESCE(AVG(evaluations.note), 0) AS note_moyenne,
-    COALESCE(promotions.pourcentage_remise, 0) AS pourcentage_remise
+    COALESCE(MAX(promotions.pourcentage_remise), 0) AS pourcentage_remise
     FROM produits 
     LEFT JOIN evaluations ON produits.id = evaluations.produit_id
-    LEFT JOIN promotions ON produits.id = promotions.produit_id
+    INNER JOIN promotions ON produits.id = promotions.produit_id
     AND NOW() BETWEEN promotions.date_debut AND promotions.date_fin';
+
     $conditions = [];
     $params = [];
 
@@ -63,6 +66,15 @@ try {
         } elseif ($prixRange[0] == '1000') {
             $conditions[] = "prix >= ?";
             $params[] = 1000;
+        }
+    }
+
+    if (!empty($tranchePromo)) {
+        $promoRange = explode('-', $tranchePromo);
+        if (count($promoRange) == 2) {
+            $conditions[] = "pourcentage_remise >= ? AND pourcentage_remise <= ?";
+            $params[] = $promoRange[0];
+            $params[] = $promoRange[1];
         }
     }
 
@@ -182,6 +194,17 @@ $dbh = null;
                         <option value="positives">Positives (> 3)</option>
                         <option value="negatives">Négatives (< 3)</option>
                     </select>
+                </div>
+
+                <div class="form-group mb-2">
+                <label for="tranchePromo" class="form-label">Tranche de Promotion:</label>
+                <select id="tranchePromo" name="tranchePromo" class="form-select">
+                    <option value="">Toutes les promos</option>
+                    <option value="0-10">0% - 10%</option>
+                    <option value="10-20">10% - 20%</option>
+                    <option value="20-30">30% - 40%</option>
+                    <option value="20-30">50% - 60%</option>
+                </select>
                 </div>
 
                 <h4>Catégories</h4>
