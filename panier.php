@@ -4,29 +4,35 @@ include('connect.php');
 
 function calculerTotalPanier() {
     $total = 0;
-    foreach ($_SESSION['panier'] as $produit) {
-        $total += $produit['prix'] * $produit['quantite'];
+    if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
+        foreach ($_SESSION['panier'] as $produit) {
+            if (isset($produit['prix'], $produit['quantite'])) {
+                $total += $produit['prix'] * $produit['quantite'];
+            }
+        }
     }
     return $total;
 }
 
 if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
-    unset($_SESSION['panier'][$_GET['id']]);
+    if (isset($_SESSION['panier'][$_GET['id']])) {
+        unset($_SESSION['panier'][$_GET['id']]);
+    }
 }
 
 $contenuPanier = '';
-$totalPanier = 0;
-if (!empty($_SESSION['panier'])) {
+if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
     foreach ($_SESSION['panier'] as $product_id => $produit) {
-        $totalProduit = $produit['prix'] * $produit['quantite'];
-        $totalPanier += $totalProduit;
-        $contenuPanier .= "<tr>
-                             <td>" . htmlspecialchars($produit['nom']) . "</td>
-                             <td>" . htmlspecialchars($produit['prix']) . " €</td>
-                             <td>" . htmlspecialchars($produit['quantite']) . "</td>
-                             <td>" . htmlspecialchars($totalProduit) . " €</td>
-                             <td><a href='panier.php?action=supprimer&id=$product_id' class='btn btn-danger btn-sm'>Supprimer</a></td>
-                           </tr>";
+        if (isset($produit['nom'], $produit['prix'], $produit['quantite'])) {
+            $totalProduit = $produit['prix'] * $produit['quantite'];
+            $contenuPanier .= "<tr>
+                                 <td>" . htmlspecialchars($produit['nom']) . "</td>
+                                 <td>" . htmlspecialchars($produit['prix']) . " €</td>
+                                 <td>" . htmlspecialchars($produit['quantite']) . "</td>
+                                 <td>" . htmlspecialchars($totalProduit) . " €</td>
+                                 <td><a href='panier.php?action=supprimer&id=$product_id' class='btn btn-danger btn-sm'>Supprimer</a></td>
+                               </tr>";
+        }
     }
     $contenuPanier .= "<tr>
                          <td colspan='3'><strong>Total</strong></td>
@@ -38,12 +44,16 @@ if (!empty($_SESSION['panier'])) {
 }
 ?>
 
-
 <!DOCTYPE html>
-<?php include('head.php');?>
+<?php include('head.php'); ?>
 <body>
-<?php include('header_nav.php');?>
+<?php include('header_nav.php'); ?>
+
 <div class="container">
+    <?php if (isset($_SESSION['erreur'])): ?>
+        <p class="alert alert-danger"><?php echo $_SESSION['erreur']; ?></p>
+        <?php unset($_SESSION['erreur']);?>
+    <?php endif; ?>
     <h1 class="my-4">Votre Panier</h1>
     <table class="table">
         <thead>
@@ -60,12 +70,19 @@ if (!empty($_SESSION['panier'])) {
         </tbody>
     </table>
     <?php if (!empty($_SESSION['panier'])): ?>
-        <a href="confirmation.php" class="btn btn-success">Confirmer la Commande</a>
+        <div>
+            <?php if (isset($_SESSION['email'])): ?>
+                <a href="expedition.php" class="btn btn-success">Confirmer la Commande</a>
+            <?php else: ?>
+                <a href="connexion_inscription.php" class="btn btn-success">Connectez-vous pour continuer</a>
+            <?php endif; ?>
+            <a href="index.php" class="btn btn-primary">Retour à la page d'accueil</a>
+        </div>
+    <?php else: ?>
+        <p>Votre panier est vide. <a href="index.php" class="btn btn-primary">Retour à la page d'accueil</a></p>
     <?php endif; ?>
-    <a href="index.php" class="btn btn-primary">Retour à la page d'accueil</a>
 </div>
-</body>
 <?php include('script_jquery.php'); ?>
-<?php include('footer.php');?>
+<?php include('footer.php'); ?>
+</body>
 </html>
-
