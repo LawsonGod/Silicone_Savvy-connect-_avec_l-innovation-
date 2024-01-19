@@ -67,7 +67,7 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
-    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix HAVING note_moyenne > 3';
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix ';
 
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
@@ -85,11 +85,11 @@ try {
     if ($filtreNote == 'positives') {
         $conditions[] = 'COALESCE(AVG(evaluations.note), 0) > 3';
     } elseif ($filtreNote == 'negatives') {
-        $conditions[] = 'COALESCE(AVG(evaluations.note), 0) <= 3';
-    
-    } else {
-        // Tri par défaut
-        $sql .= " ORDER BY produits.id ASC";
+        $conditions[] = 'COALESCE(AVG(evaluations.note), 0) < 3';
+    }
+
+    if (!empty($havingConditions)) {
+        $sql .= ' HAVING ' . implode(' AND ', $havingConditions);
     }
     
     $stmt = $dbh->prepare($sql);
@@ -114,6 +114,7 @@ try {
             $image = $row['image'];
             $nom = $row['nom'];
             $prix = $row['prix'];
+            $note_moyenne = $row['note_moyenne'];
 
             $message .= '<div class="product">';
             $message .= "<a href='produit.php?id=$product_id'>";
@@ -185,18 +186,20 @@ $dbh = null;
                     </div>
                 <?php endforeach; ?>
 
+                <div class="form-group mb-2">
+                    <select id="filtreNote" name="filtreNote" class="form-select">
+                        <option value="">Filtrer par Note</option>
+                        <option value="positives">Positives (> 3)</option>
+                        <option value="negatives">Négatives (< 3)</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary mt-2">Rechercher et Filtrer</button>
                 <a href='index.php' class='btn btn-secondary mt-2'>Réinitialiser</a>
                 <br>
                 <br>
 
-                <div class="form-group mb-2">
-                    <select id="filtreNote" name="filtreNote" class="form-select">
-                        <option value="">Filtrer par Note</option>
-                        <option value="positives">Positives (> 3)</option>
-                        <option value="negatives">Négatives (≤ 3)</option>
-                    </select>
-                </div>
+                
             </form>
 
         </div>
