@@ -9,10 +9,11 @@ $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
-$filtreNote = isset($_POST['filtreNote']) ? $_POST['filtreNote'] : '';
+$produitsParPage = 18;
 
 function isChecked($value, $postArray) {
-    return in_array($value, $postArray) ? 'checked' : '';
+return in_array($value, $postArray) ? 'checked' : '';
+
 }
 
 try {
@@ -25,13 +26,24 @@ try {
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
-    COALESCE(AVG(evaluations.note), 0) AS note_moyenne 
-    FROM produits 
-    LEFT JOIN evaluations ON produits.id = evaluations.produit_id';
+    $stmt_produit = $dbh->query('SELECT id, nom FROM produit');
+    $produit = $stmt_prod->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt_evaluations = $dbh->query('SELECT * FROM evaluations');
+    $evaluations = $stmt_eval->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt_promotions = $dbh->query('SELECT * FROM promotions');
+    $promotions = $stmt_prom->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql = 'SELECT p.id, p.image, p.nom, p.prix, IFNULL(pr.pourcentage_remise, 0) AS pourcentage_remise, IFNULL(AVG(c.note), 0) AS note_moyenne
+    FROM produits p
+    LEFT JOIN promotions pr ON p.id = pr.produit_id AND NOW() BETWEEN pr.date_debut AND pr.date_fin
+    LEFT JOIN evaluations c ON p.id = c.produit_id
+    WHERE 1=1';
 
     $conditions = [];
     $params = [];
+
 
     if (isset($_POST['keyword']) && !empty($_POST['keyword'])) {
         $keyword = '%' . $_POST['keyword'] . '%';
@@ -67,8 +79,9 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
-    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix ';
+    $sql .= ' GROUP BY p.id';
 
+   
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
         if ($orderBy == 'asc') {
@@ -81,34 +94,17 @@ try {
     }
 
    
-
-    if ($filtreNote == 'positives') {
-        $conditions[] = 'COALESCE(AVG(evaluations.note), 0) > 3';
-    } elseif ($filtreNote == 'negatives') {
-        $conditions[] = 'COALESCE(AVG(evaluations.note), 0) < 3';
-    }
-
-    if (!empty($havingConditions)) {
-        $sql .= ' HAVING ' . implode(' AND ', $havingConditions);
-    }
-    
     $stmt = $dbh->prepare($sql);
-    try {
-        if (!$stmt) {
-            throw new PDOException("La préparation de la requête a échoué.");
-        }
-
-        $stmt->execute($params);
-    } catch (PDOException $e) {
-        echo "Erreur : " . $e->getMessage();
-    }
-        
-    // Affichage des resultats
+    $stmt->execute($params);
 
     if ($stmt->rowCount() === 0) {
         $message = '<p>Aucun résultat trouvé.</p>';
     } else {
+        $rowCount = $stmt->rowCount();
         $message = '<div class="product-grid">';
+
+    // Affichage des resultats
+
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product_id = $row['id'];
             $image = $row['image'];
@@ -121,11 +117,16 @@ try {
             $message .= "<img src='$image' alt='$nom'>";
             $message .= "<h3>$nom</h3>";
             $message .= "<p>Prix : $prix €</p>";
-            $message .= '</a>';
-            $message .= '</div>';
+            
+            if ($pourcentage_remise > 0) {
+                $message .= "<p>Remise : $pourcentage_remise%</p>";
         }
+        $message .= "<p>Note moyenne : $note_moyenne</p>";
+        $message .= '</a>';
         $message .= '</div>';
     }
+}
+
 } catch (PDOException $e) {
     $message = 'Une erreur est survenue lors de la récupération des données : ' . $e->getMessage();
 }
@@ -136,6 +137,7 @@ $dbh = null;
 <?php include('head.php');?>
 <?php include('header_nav.php');?>
 <body>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -192,6 +194,13 @@ $dbh = null;
                         <option value="positives">Positives (> 3)</option>
                         <option value="negatives">Négatives (< 3)</option>
                     </select>
+                </div>
+                <h4>Produits en Promotion</h4>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="promo" id="promo" value="1" <?php echo (isset($_POST['promo']) && $_POST['promo'] == '1') ? 'checked' : ''; ?>>
+                    <label class="form-check-label" for="promo">
+                        Afficher uniquement les produits en promotion
+                    </label>
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-2">Rechercher et Filtrer</button>

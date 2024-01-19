@@ -1,7 +1,7 @@
 <?php
     global $dbh;
     session_start();
-    include('connect.php');
+    include('connect_God.php');
 
     if (isset($_GET['id'])) {
         $product_id = $_GET['id'];
