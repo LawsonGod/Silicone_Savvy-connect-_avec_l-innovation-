@@ -1,47 +1,15 @@
 <?php
-global $dbh;
 session_start();
 include('connect.php');
-include('inclusion.php');
 
 if (!isset($_SESSION['email'])) {
     header('Location: connexion_inscription.php');
     exit;
 }
 
-$queryUtilisateur = $dbh->prepare("SELECT id FROM clients WHERE email = :email");
-$queryUtilisateur->execute(['email' => $_SESSION['email']]);
-$utilisateurInfo = $queryUtilisateur->fetch(PDO::FETCH_ASSOC);
-
-if ($utilisateurInfo) {
-    $utilisateur_id = $utilisateurInfo['id'];
-
-    $queryPanier = $dbh->prepare("SELECT id FROM paniers WHERE utilisateur_id = :utilisateur_id");
-    $queryPanier->execute(['utilisateur_id' => $utilisateur_id]);
-    $panierInfo = $queryPanier->fetch(PDO::FETCH_ASSOC);
-
-    if ($panierInfo) {
-        $panier_id = $panierInfo['id'];
-
-        $queryProduits = $dbh->prepare("SELECT COUNT(*) FROM paniers_produits WHERE panier_id = :panier_id");
-        $queryProduits->execute(['panier_id' => $panier_id]);
-        $count = $queryProduits->fetchColumn();
-
-        if ($count == 0) {
-            $_SESSION['erreur'] = "Votre panier est vide.";
-            header('Location: panier.php');
-            exit;
-        }
-    } else {
-        $_SESSION['erreur'] = "Vous n'avez pas de panier.";
-        header('Location: panier.php');
-        exit;
-    }
-} else {
-    header('Location: connexion_inscription.php');
-    exit;
-}
+$email = $_SESSION['email'];
 ?>
+
 <!DOCTYPE html>
 <?php include('head.php');?>
 <body>
