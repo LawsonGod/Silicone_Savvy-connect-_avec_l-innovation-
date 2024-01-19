@@ -9,13 +9,16 @@ $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
-
+$filtreNote = isset($_POST['filtreNote']) ? $_POST['filtreNote'] : '';
 
 function isChecked($value, $postArray) {
     return in_array($value, $postArray) ? 'checked' : '';
 }
 
 try {
+    if ($dbh === null) {
+        die("Erreur de connexion à la base de données.");
+    }
     $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
     $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
 
@@ -64,7 +67,7 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
-    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix';
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix HAVING note_moyenne > 3';
 
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
@@ -79,16 +82,16 @@ try {
 
    
 
-    if (isset($_POST['triEvaluation'])) {
-        $triEvaluation = $_POST['triEvaluation'];
-        if ($triEvaluation == 'note_asc') {
-            $sql .= ' ORDER BY note_moyenne ASC';
-        } elseif ($triEvaluation == 'note_desc') {
-            $sql .= ' ORDER BY note_moyenne DESC';
-        }
+    if ($filtreNote == 'positives') {
+        $conditions[] = 'COALESCE(AVG(evaluations.note), 0) > 3';
+    } elseif ($filtreNote == 'negatives') {
+        $conditions[] = 'COALESCE(AVG(evaluations.note), 0) <= 3';
+    
+    } else {
+        // Tri par défaut
+        $sql .= " ORDER BY produits.id ASC";
     }
     
-
     $stmt = $dbh->prepare($sql);
     try {
         if (!$stmt) {
@@ -99,6 +102,8 @@ try {
     } catch (PDOException $e) {
         echo "Erreur : " . $e->getMessage();
     }
+        
+    // Affichage des resultats
 
     if ($stmt->rowCount() === 0) {
         $message = '<p>Aucun résultat trouvé.</p>';
@@ -186,16 +191,14 @@ $dbh = null;
                 <br>
 
                 <div class="form-group mb-2">
-                    <label for="triEvaluation" class="form-label">Tri par Évaluation:</label>
-                    <select id="triEvaluation" name="triEvaluation" class="form-select">
-                        <option value="">Choisissez un tri</option>
-                        <option value="note_asc">Évaluation : Croissante</option>
-                    <option value="note_desc">Évaluation : Décroissante</option>
-                    <option value="positives">Avis Positifs (> 3 étoiles)</option>
-                    <option value="negatives">Avis Négatifs (<= 3 étoiles)</option>
+                    <select id="filtreNote" name="filtreNote" class="form-select">
+                        <option value="">Filtrer par Note</option>
+                        <option value="positives">Positives (> 3)</option>
+                        <option value="negatives">Négatives (≤ 3)</option>
                     </select>
                 </div>
             </form>
+
         </div>
 
         <div class="col-md-8">
