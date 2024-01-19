@@ -145,8 +145,8 @@ $dbh = null;
 ?>
 <!DOCTYPE html>
 <?php include('head.php');?>
-<?php include('header_nav.php');?>
 <body>
+<?php include('header_nav.php');?>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">

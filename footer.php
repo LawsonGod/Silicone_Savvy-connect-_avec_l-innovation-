@@ -4,13 +4,23 @@ echo '<footer class="container-fluid bg-dark text-white mt-5">
         <div class="row">
             <div class="col-md-4">
                 <h5>À propos de nous</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec hendrerit turpis.</p>
+                <ul class="list-unstyled">
+                    <li><a href="#">Qui sommes-nous ?</a></li>
+                    <li><a href="#">Offre étudiante</a></li>
+                    <li><a href="#">Recrutement</a></li>
+                </ul>
             </div>
             <div class="col-md-4">
-                <h5>Conditions générales d\'utilisation</h5>
+                <h5>Conditions générales</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Politique de confidentialité</a></li>
+                    <li><a href="#">Conditions générales d\'utilisation</a></li>
+                    <li><a href="#">Conditions générales de vente</a></li>
+                    <li><a href="#">Contrat de garantie commerciale</a></li>
                     <li><a href="#">Termes et conditions</a></li>
+                    <li><a href="#">Protection des données</a></li>
+                    <li><a href="#">Cookies</a></li>
+                    <li><a href="#">Autres infos légales</a></li>
+                    <li><a href="#">Mentions légales</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
@@ -49,14 +59,16 @@ echo '<footer class="container-fluid bg-dark text-white mt-5">
         <div class="row mt-4">
             <div class="col-md-4">
                 <h5>Suivez-nous sur</h5>
-                <ul class="list-unstyled">
-                    <li><a href="https://www.facebook.com/"><img class="icones_sociaux" src="./assets/icones/facebook.svg" alt="Facebook"></a></li>
-                    <li><a href="https://twitter.com/X"><img class="icones_sociaux" src="./assets/icones/twitter.svg" alt="Twitter"></a></li>
-                    <li><a href="https://www.instagram.com/"><img class="icones_sociaux" src="./assets/icones/instagram.svg" alt="Instagram"></a></li>
-                    <li><a href="https://www.linkedin.com/"><img class="icones_sociaux" src="./assets/icones/linkedin.svg" alt="LinkedIn"></a></li>
-                    <li><a href="https://www.tiktok.com/fr"><img class="icones_sociaux" src="./assets/icones/tiktok.svg" alt="TikTok"></a></li>
-                    <li><a href="https://www.youtube.com/"><img class="icones_sociaux" src="./assets/icones/youtube.svg" alt="YouTube"></a></li>
-                </ul>
+                <div class="row"> 
+                    <div class="col d-flex justify-content-start"> 
+                        <a href="https://www.facebook.com/"><img class="icones_sociaux" src="./assets/icones/facebook.svg" alt="Facebook"></a>
+                        <a href="https://twitter.com/X"><img class="icones_sociaux" src="./assets/icones/twitter.svg" alt="Twitter"></a>
+                        <a href="https://www.instagram.com/"><img class="icones_sociaux" src="./assets/icones/instagram.svg" alt="Instagram"></a>
+                        <a href="https://www.linkedin.com/"><img class="icones_sociaux" src="./assets/icones/linkedin.svg" alt="LinkedIn"></a>
+                        <a href="https://www.tiktok.com/fr"><img class="icones_sociaux" src="./assets/icones/tiktok.svg" alt="TikTok"></a>
+                        <a href="https://www.youtube.com/"><img class="icones_sociaux" src="./assets/icones/youtube.svg" alt="YouTube"></a>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
                 <h5>Télécharger notre application</h5>
