@@ -1,6 +1,9 @@
 <?php
 global $dbh;
-session_start();
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 include('connect.php');
 
@@ -9,7 +12,7 @@ $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
-
+$produitsParPage = 18;
 
 function isChecked($value, $postArray) {
     return in_array($value, $postArray) ? 'checked' : '';
@@ -22,7 +25,11 @@ try {
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = 'SELECT id, image, nom, prix FROM produits';
+    $sql = 'SELECT p.id, p.image, p.nom, p.prix, IFNULL(pr.pourcentage_remise, 0) AS pourcentage_remise, IFNULL(AVG(c.note), 0) AS note_moyenne
+    FROM produits p
+    LEFT JOIN promotions pr ON p.id = pr.produit_id AND NOW() BETWEEN pr.date_debut AND pr.date_fin
+    LEFT JOIN evaluations c ON p.id = c.produit_id
+    WHERE 1=1';
     $conditions = [];
     $params = [];
 
@@ -60,6 +67,7 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
+    $sql .= ' GROUP BY p.id';
 
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
@@ -73,34 +81,38 @@ try {
     }
 
     $stmt = $dbh->prepare($sql);
-    try {
-        if (!$stmt) {
-            throw new PDOException("La préparation de la requête a échoué.");
-        }
-
-        $stmt->execute($params);
-    } catch (PDOException $e) {
-        echo "Erreur : " . $e->getMessage();
-    }
+    $stmt->execute($params);
 
     if ($stmt->rowCount() === 0) {
         $message = '<p>Aucun résultat trouvé.</p>';
     } else {
+        $rowCount = $stmt->rowCount();
         $message = '<div class="product-grid">';
+
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product_id = $row['id'];
             $image = $row['image'];
             $nom = $row['nom'];
             $prix = $row['prix'];
+            $pourcentage_remise = $row['pourcentage_remise'];
+            $note_moyenne = round($row['note_moyenne'], 2);
 
             $message .= '<div class="product">';
             $message .= "<a href='produit.php?id=$product_id'>";
             $message .= "<img src='$image' alt='$nom'>";
             $message .= "<h3>$nom</h3>";
             $message .= "<p>Prix : $prix €</p>";
+
+            if ($pourcentage_remise > 0) {
+                $message .= "<p>Remise : $pourcentage_remise%</p>";
+            }
+
+            $message .= "<p>Note moyenne : $note_moyenne</p>";
+
             $message .= '</a>';
             $message .= '</div>';
         }
+
         $message .= '</div>';
     }
 } catch (PDOException $e) {
@@ -109,6 +121,7 @@ try {
 
 $dbh = null;
 ?>
+
 <!DOCTYPE html>
 <?php include('head.php');?>
 <body>
@@ -142,7 +155,6 @@ $dbh = null;
                     </select>
                 </div>
 
-
                 <h4>Catégories</h4>
                 <?php foreach ($categories as $categorie): ?>
                     <div class="form-check">
@@ -167,14 +179,14 @@ $dbh = null;
                 <a href='index.php' class='btn btn-secondary mt-2'>Réinitialiser</a>
             </form>
         </div>
-
         <div class="col-md-8">
             <h2>Liste des Produits</h2>
             <?php echo $message; ?>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<?php include('footer.php'); ?>
 </body>
-<?php include('script_jquery.php'); ?>
-<?php include('footer.php');?>
 </html>

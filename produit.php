@@ -38,7 +38,7 @@
         </div>
 
         <form action="ajouter_panier.php" method="post" class="form-inline">
-            <input type="hidden" name="product_id" value="<?php echo $product_id;?>"> <!-- Assurez-vous que $id_reel_du_produit a une valeur valide -->
+            <input type="hidden" name="product_id" value="<?php echo $product_id;?>">
 
             <div class="form-group mx-sm-3 mb-2">
                 <label for="quantite" class="sr-only">Quantité</label>
