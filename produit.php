@@ -16,31 +16,14 @@
         $stmt = $dbh->prepare($sql);
         $stmt->execute([':product_id' => $product_id]);
         $produit = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $sql_evaluations = 'SELECT clients.alias, evaluations.note, evaluations.commentaire 
-                            FROM evaluations 
-                            INNER JOIN clients ON evaluations.utilisateur_id = clients.id 
-                            WHERE evaluations.produit_id = :product_id';
-
-        $stmt_evaluations = $dbh->prepare($sql_evaluations);
-        $stmt_evaluations->execute([':product_id' => $product_id]);
-        $evaluations = $stmt_evaluations->fetchAll(PDO::FETCH_ASSOC);
-
-        $sql_note_moyenne = 'SELECT AVG(note) as note_moyenne 
-                             FROM evaluations 
-                             WHERE produit_id = :product_id';
-
-        $stmt_note_moyenne = $dbh->prepare($sql_note_moyenne);
-        $stmt_note_moyenne->execute([':product_id' => $product_id]);
-        $note_moyenne = $stmt_note_moyenne->fetch(PDO::FETCH_ASSOC)['note_moyenne'];
     }
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
+<body>
 <div class="container mt-4">
     <?php if ($produit): ?>
         <div class="card">
@@ -70,35 +53,14 @@
     <?php endif; ?>
 
     <a href="index.php" class="btn btn-secondary mt-3">Retour à la liste des produits</a>
-    <div class="container mt-3">
-        <h3>Évaluations des Clients</h3>
-        <?php if ($note_moyenne): ?>
-            <p class="lead">Note moyenne : <span class="badge bg-success"><?php echo round($note_moyenne, 1); ?>/5</span></p>
-        <?php endif; ?>
-        <div class="list-group">
-            <?php foreach ($evaluations as $evaluation): ?>
-                <div class="list-group-item list-group-item-action flex-column align-items-start">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1"><?php echo htmlspecialchars($evaluation['alias']); ?></h5>
-                        <small>Note : <?php echo htmlspecialchars($evaluation['note']); ?>/5</small>
-                    </div>
-                    <p class="mb-1"><?php echo htmlspecialchars($evaluation['commentaire']); ?></p>
-                </div>
-            <?php endforeach; ?>
-        </div>
-        <?php if (empty($evaluations)): ?>
-            <p class="alert alert-warning">Pas d'évaluations pour ce produit.</p>
-        <?php endif; ?>
-    </div>
-
 </div>
 
-<?php //if(isset($product_id)): ?>
-<!--    <div class="container mt-3">-->
-<!--        <p>ID du produit reçu : --><?php //echo $product_id; ?><!--</p>-->
-<!--    </div>-->
-<?php //endif; ?>
+<!-- Debug: Afficher l'ID du produit -->
+<?php if(isset($product_id)): ?>
+    <div class="container mt-3">
+        <p>ID du produit reçu : <?php echo $product_id; ?></p>
+    </div>
+<?php endif; ?>
 </body>
-<?php include('script_jquery.php'); ?>
 <?php include('footer.php');?>
 </html>

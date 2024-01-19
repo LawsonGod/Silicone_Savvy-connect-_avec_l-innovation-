@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('connect.php');
+include('connect_God.php');
 
 function calculerTotalPanier() {
     $total = 0;
@@ -48,7 +48,6 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
 <?php include('head.php'); ?>
 <body>
 <?php include('header_nav.php'); ?>
-
 <div class="container">
     <?php if (isset($_SESSION['erreur'])): ?>
         <p class="alert alert-danger"><?php echo $_SESSION['erreur']; ?></p>

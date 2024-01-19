@@ -49,27 +49,26 @@ if (isset($_SESSION["user_type"])) {
 } else {
     echo '<a href="connexion_inscription.php" class="text-white mx-2"><i class="fa-regular fa-user"></i> Connexion/Inscription</a>';
 }
-
 echo '</div>
             </div>
         </div>
     </div>
 </header>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.php"><i class="fa-solid fa-house"></i> Accueil</a>
-                </li>
-                <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Catégories
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategories">';
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php"><i class="fa-solid fa-house"></i> Accueil</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Catégories
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategories">';
 try {
     $stmt = $dbh->prepare("SELECT id, nom FROM categories");
     $stmt->execute();
@@ -79,17 +78,17 @@ try {
 } catch (PDOException $e) {
     echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
 }
-echo '</ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa-solid fa-bullhorn"></i> Nouveautés</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa-solid fa-bolt"></i> Ventes flash</a>
-            </li>
-        </ul>
+echo '            </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fa-solid fa-bullhorn"></i> Nouveautés</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fa-solid fa-bolt"></i> Ventes flash</a>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
 </nav>
 <div id="categorie-info"></div>';
 ?>
