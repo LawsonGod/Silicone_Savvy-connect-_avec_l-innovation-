@@ -43,7 +43,7 @@ if (isset($_SESSION["user_type"])) {
         echo '<a href="deconnexion.php" class="btn btn-danger mx-2"><i class="fa-regular fa-sign-out"></i> Déconnexion</a>';
     } elseif ($_SESSION["user_type"] == "administrateur" && isset($_SESSION["nom"])) {
         echo '<h1>Connexion administrateur</h1>';
-        echo '<a href="index.php" class="text-white mx-2"><i class="fa-solid fa-crown"></i> Espace Admin</a>';
+        echo '<a href="admin.php" class="btn btn-primary text-white mx-2"><i class="fa-solid fa-crown"></i> Espace Admin</a>';
         echo '<a href="deconnexion.php" class="btn btn-danger mx-2"><i class="fa-regular fa-sign-out"></i> Déconnexion</a>';
     }
 } else {
