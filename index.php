@@ -1,9 +1,6 @@
 <?php
 global $dbh;
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 
 include('connect.php');
 
@@ -12,24 +9,29 @@ $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
-$produitsParPage = 18;
+$filtreNote = isset($_POST['filtreNote']) ? $_POST['filtreNote'] : '';
 
 function isChecked($value, $postArray) {
     return in_array($value, $postArray) ? 'checked' : '';
 }
 
 try {
+    if ($dbh === null) {
+        die("Erreur de connexion à la base de données.");
+    }
     $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
     $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
 
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = 'SELECT p.id, p.image, p.nom, p.prix, IFNULL(pr.pourcentage_remise, 0) AS pourcentage_remise, IFNULL(AVG(c.note), 0) AS note_moyenne
-    FROM produits p
-    LEFT JOIN promotions pr ON p.id = pr.produit_id AND NOW() BETWEEN pr.date_debut AND pr.date_fin
-    LEFT JOIN evaluations c ON p.id = c.produit_id
-    WHERE 1=1';
+    $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
+    COALESCE(AVG(evaluations.note), 0) AS note_moyenne,
+    COALESCE(promotions.pourcentage_remise, 0) AS pourcentage_remise
+    FROM produits 
+    LEFT JOIN evaluations ON produits.id = evaluations.produit_id
+    LEFT JOIN promotions ON produits.id = promotions.produit_id
+    AND NOW() BETWEEN promotions.date_debut AND promotions.date_fin';
     $conditions = [];
     $params = [];
 
@@ -67,8 +69,18 @@ try {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
-    $sql .= ' GROUP BY p.id';
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix ';
+    $havingConditions = [];
 
+    if ($filtreNote == 'positives') {
+        $havingConditions[] = 'COALESCE(AVG(evaluations.note), 0) > 3';
+    } elseif ($filtreNote == 'negatives') {
+        $havingConditions[] = 'COALESCE(AVG(evaluations.note), 0) < 3';
+    }
+
+    if (!empty($havingConditions)) {
+        $sql .= ' HAVING ' . implode(' AND ', $havingConditions);
+    }
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
         if ($orderBy == 'asc') {
@@ -81,38 +93,48 @@ try {
     }
 
     $stmt = $dbh->prepare($sql);
-    $stmt->execute($params);
+    try {
+        if (!$stmt) {
+            throw new PDOException("La préparation de la requête a échoué.");
+        }
+
+        $stmt->execute($params);
+    } catch (PDOException $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
 
     if ($stmt->rowCount() === 0) {
         $message = '<p>Aucun résultat trouvé.</p>';
     } else {
-        $rowCount = $stmt->rowCount();
         $message = '<div class="product-grid">';
-
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product_id = $row['id'];
             $image = $row['image'];
             $nom = $row['nom'];
             $prix = $row['prix'];
+            $note_moyenne = round($row['note_moyenne'], 1);
             $pourcentage_remise = $row['pourcentage_remise'];
-            $note_moyenne = round($row['note_moyenne'], 2);
+
+            $prix_final = $pourcentage_remise > 0 ? $prix - ($prix * $pourcentage_remise / 100) : $prix;
+            $prix_final_formatte = number_format($prix_final, 2, '.', '');
 
             $message .= '<div class="product">';
             $message .= "<a href='produit.php?id=$product_id'>";
             $message .= "<img src='$image' alt='$nom'>";
             $message .= "<h3>$nom</h3>";
-            $message .= "<p>Prix : $prix €</p>";
 
             if ($pourcentage_remise > 0) {
-                $message .= "<p>Remise : $pourcentage_remise%</p>";
+                $message .= "<p class='prix-original'><s>Prix : $prix €</s></p>";
+                $message .= "<p class='remise'>Remise : $pourcentage_remise%</p>";
+                $message .= "<p class='prix-remise'>Après remise : $prix_final_formatte €</p>";
+            } else {
+                $message .= "<p>Prix : $prix €</p>";
             }
 
-            $message .= "<p>Note moyenne : $note_moyenne</p>";
-
+            $message .= "<p>Note moyenne : $note_moyenne / 5</p>";
             $message .= '</a>';
             $message .= '</div>';
         }
-
         $message .= '</div>';
     }
 } catch (PDOException $e) {
@@ -121,11 +143,10 @@ try {
 
 $dbh = null;
 ?>
-
 <!DOCTYPE html>
 <?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
+<body>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -155,6 +176,14 @@ $dbh = null;
                     </select>
                 </div>
 
+                <div class="form-group mb-2">
+                    <select id="filtreNote" name="filtreNote" class="form-select">
+                        <option value="">Filtrer par Note</option>
+                        <option value="positives">Positives (> 3)</option>
+                        <option value="negatives">Négatives (< 3)</option>
+                    </select>
+                </div>
+
                 <h4>Catégories</h4>
                 <?php foreach ($categories as $categorie): ?>
                     <div class="form-check">
@@ -177,16 +206,19 @@ $dbh = null;
 
                 <button type="submit" class="btn btn-primary mt-2">Rechercher et Filtrer</button>
                 <a href='index.php' class='btn btn-secondary mt-2'>Réinitialiser</a>
+                <br>
+                <br>
+
             </form>
+
         </div>
+
         <div class="col-md-8">
             <h2>Liste des Produits</h2>
             <?php echo $message; ?>
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<?php include('footer.php'); ?>
 </body>
+<?php include('footer.php');?>
 </html>
