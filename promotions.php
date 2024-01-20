@@ -23,7 +23,7 @@ try {
         $products .= '<p class="card-text">Ancien Prix: <del>' . htmlspecialchars($row['prix']) . ' €</del></p>';
         $products .= '<p class="card-text text-danger">Remise: ' . htmlspecialchars($row['pourcentage_remise']) . '%</p>';
         $products .= '<p class="card-text">Nouveau Prix: ' . $nouveauPrix . ' €</p>';
-        $products .= '<p class="card-text">' . htmlspecialchars($row['description']) . '</p>';
+        $products .= '<p class="card-text" style="text-align: justify;">' . htmlspecialchars($row['description']) . '</p>';
         $products .= '</div>';
         $products .= '</div>';
         $products .= '</div>';
