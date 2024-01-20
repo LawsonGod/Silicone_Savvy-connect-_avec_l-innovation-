@@ -12,6 +12,7 @@ function login($dbh, $email, $password, $table, $userType) {
         if (password_verify($password, $user['mot_de_passe'])) {
             session_regenerate_id();
             $_SESSION['user_type'] = $userType;
+            $_SESSION['client_id'] = $user['id'];
             $_SESSION['email'] = $email;
             $_SESSION['nom'] = $user['nom'];
 

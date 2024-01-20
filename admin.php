@@ -168,26 +168,59 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php
                 foreach ($produits as $produit) {
                     $prixApresRemise = number_format($produit['PrixApresRemise'], 2);
+                    $hasRemise = $produit['PourcentageRemise'] > 0;
                     ?>
                     <tr>
-                        <td><img src="<?php echo $produit['Image']; ?>" alt="<?php echo $produit['NomProduit']; ?>"></td>
-                        <td><?php echo $produit['NomProduit']; ?></td>
-                        <td><?php echo $produit['NomCategorie']; ?></td>
-                        <td><?php echo $produit['NomMarque']; ?></td>
-                        <td><?php echo $produit['Prix']; ?></td>
-                        <td><?php echo $produit['PourcentageRemise']; ?></td>
-                        <td><?php echo $prixApresRemise; ?></td>
-                        <td><?php echo $produit['QuantiteStock']; ?></td>
-                        <td>
-                            <form action="admin.php" method="POST">
-                                <input type="hidden" name="delete_product_id" value="<?php echo $produit['id']; ?>">
-                                <button type="submit" name="supprimer_produit" class="btn btn-danger">Supprimer</button>
-                            </form>
+                        <td class="align-middle"><img src="<?php echo htmlspecialchars(isset($produit['Image']) ?
+                                $produit['Image'] :
+                                ''); ?>" alt="<?php echo htmlspecialchars(isset($produit['NomProduit']) ?
+                                $produit['NomProduit'] :
+                                ''); ?>"></td>
+                        <td class="align-middle"><?php echo htmlspecialchars(isset($produit['NomProduit']) ?
+                                $produit['NomProduit'] :
+                                ''); ?></td>
+                        <td class="align-middle"><?php echo htmlspecialchars(isset($produit['NomCategorie']) ?
+                                $produit['NomCategorie'] :
+                                ''); ?></td>
+                        <td class="align-middle"><?php echo htmlspecialchars(isset($produit['NomMarque']) ?
+                                $produit['NomMarque'] :
+                                ''); ?></td>
+                        <td class="align-middle"><?php echo htmlspecialchars(isset($produit['Prix']) ?
+                                $produit['Prix'] :
+                                ''); ?></td>
+
+                        <td class="align-middle <?php echo $hasRemise ? 'text-danger' : ''; ?>">
+                            <?php echo $hasRemise ? htmlspecialchars($produit['PourcentageRemise']) . '%' : ''; ?>
+                        </td>
+
+                        <td class="align-middle <?php echo $hasRemise ? 'text-danger' : ''; ?>">
+                            <?php echo $hasRemise ? htmlspecialchars($prixApresRemise) : ''; ?>
+                        </td>
+
+                        <td class="align-middle"><?php echo htmlspecialchars(isset($produit['QuantiteStock']) ?
+                                $produit['QuantiteStock'] :
+                                ''); ?></td>
+                        <td class="align-middle">
+                            <div class="d-flex flex-column">
+                                <form action="admin.php" method="POST">
+                                    <input type="hidden" name="edit_product_id" value="<?php echo htmlspecialchars(isset($produit['id']) ?
+                                        $produit['id'] :
+                                        ''); ?>">
+                                    <button type="submit" name="editer_produit" class="btn btn-primary mb-2 w-100">Éditer</button>
+                                </form>
+                                <form action="admin.php" method="POST">
+                                    <input type="hidden" name="delete_product_id" value="<?php echo htmlspecialchars(isset($produit['id']) ?
+                                        $produit['id'] :
+                                        ''); ?>">
+                                    <button type="submit" name="supprimer_produit" class="btn btn-danger w-100">Supprimer</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <?php
                 }
                 ?>
+
                 </tbody>
             </table>
         </div>

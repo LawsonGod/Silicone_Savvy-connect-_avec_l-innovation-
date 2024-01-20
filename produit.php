@@ -86,6 +86,23 @@
             <p>Pas d'évaluations pour ce produit.</p>
         <?php endif; ?>
     </div>
+    <?php if (isset($_SESSION['client_id'])): ?>
+        <div class="container mt-3">
+            <h4>Ajouter un avis :</h4>
+            <form action="ajouter_avis.php" method="post">
+                <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+                <div class="form-group">
+                    <label for="note">Note (de 1 à 5) :</label>
+                    <input type="number" class="form-control" name="note" id="note" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="commentaire">Commentaire :</label>
+                    <textarea class="form-control" name="commentaire" id="commentaire" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter l'avis</button>
+            </form>
+        </div>
+    <?php endif; ?>
 <?php endif; ?>
 
 </body>

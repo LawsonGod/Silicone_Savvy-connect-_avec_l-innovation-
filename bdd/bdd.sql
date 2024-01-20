@@ -271,16 +271,16 @@ CREATE TABLE commandes (
 ) ENGINE InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO commandes (client_id, date, statut, montant_total) VALUES
-('2', '2023-09-07', 'Livré', '299'),
-('7', '2023-08-31', 'Livré', '599'),
-('11', '2023-12-22', 'Livré', '450'),
+('1', '2023-09-07', 'Livré', '299'),
+('1', '2023-08-31', 'Livré', '599'),
+('1', '2023-12-22', 'Livré', '450'),
 ('12', '2023-12-29', 'Livré', '1299'),
 ('13', '2023-07-24', 'Livré', '1099.99'),
 ('4', '2023-03-25', 'Livré', '699'),
-('8', '2023-10-18', 'Annulé', '999'),
+('1', '2023-10-18', 'Annulé', '999'),
 ('21', '2023-08-21', 'Livré', '649.50'),
 ('24', '2023-09-05', 'Livré', '1499'),
-('27', '2024-01-15', 'En cours', '449');
+('1', '2024-01-15', 'En cours', '449');
 
 CREATE TABLE expeditions (
     id INT PRIMARY KEY AUTO_INCREMENT,

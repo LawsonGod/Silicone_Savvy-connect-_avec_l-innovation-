@@ -7,7 +7,9 @@ h1 {
 a {
     text-decoration: none;
 }
-
+.large-nav-item {
+    font-size: larger;
+}
 a:hover {
     text-decoration: underline;
 }
@@ -115,4 +117,7 @@ a:hover {
     width: 100%;
     height: 2px;
     background-color: blueviolet;
+}
+.text-red {
+    color: red;
 }
