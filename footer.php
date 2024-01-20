@@ -5,22 +5,21 @@ echo '<footer class="container-fluid bg-dark text-white mt-5">
             <div class="col-md-4">
                 <h5>À propos de nous</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Qui sommes-nous ?</a></li>
-                    <li><a href="#">Offre étudiante</a></li>
-                    <li><a href="#">Recrutement</a></li>
+                    <li><a href="./qui_sommes_nous.php" class="text-white">Qui sommes-nous ?</a></li>
+                    <li><a href="./offre_etudiante.php" class="text-white">Offre étudiante</a></li>
+                    <li><a href="./recrutement.php" class="text-white">Recrutement</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
                 <h5>Conditions générales</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Conditions générales d\'utilisation</a></li>
-                    <li><a href="#">Conditions générales de vente</a></li>
-                    <li><a href="#">Contrat de garantie commerciale</a></li>
-                    <li><a href="#">Termes et conditions</a></li>
-                    <li><a href="#">Protection des données</a></li>
-                    <li><a href="#">Cookies</a></li>
-                    <li><a href="#">Autres infos légales</a></li>
-                    <li><a href="#">Mentions légales</a></li>
+                    <li><a href="./conditions_generales_utilisation.php" class="text-white">Conditions générales d\'utilisation</a></li>
+                    <li><a href="./conditions_generales_vente.php" class="text-white">Conditions générales de vente</a></li>
+                    <li><a href="./contrat_garantie_commerciale.php" class="text-white">Contrat de garantie commerciale</a></li>
+                    <li><a href="./conditions_generales_service_reprise.php" class="text-white">Conditions générales du service de reprise</a></li>
+                    <li><a href="./protections_des_donnees.php" class="text-white">Protection des données</a></li>
+                    <li><a href="./cookies.php" class="text-white">Cookies</a></li>
+                    <li><a href="./mentions_legales.php" class="text-white">Mentions légales</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
@@ -35,14 +34,14 @@ echo '<footer class="container-fluid bg-dark text-white mt-5">
             <div class="col-md-4">
                 <h5>Avis clients</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Lire les avis</a></li>
-                    <li><a href="#">Écrire un avis</a></li>
+                    <li><a href="./lire_les_avis.php" class="text-white">Lire les avis</a></li>
+                    <li><a href="./ecrire_un_avis.php" class="text-white">Écrire un avis</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
                 <h5>FAQ</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Questions fréquentes</a></li>
+                    <li><a href="./questions_frequentes.php" class="text-white">Questions fréquentes</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
