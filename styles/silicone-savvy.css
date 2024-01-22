@@ -13,6 +13,10 @@ a {
 a:hover {
     text-decoration: underline;
 }
+.small-product-image {
+    width: 150px;
+    height: auto;
+}
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

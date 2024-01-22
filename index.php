@@ -143,9 +143,6 @@ try {
 
 $dbh = null;
 ?>
-<!DOCTYPE html>
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
 <div class="container-fluid">
     <div class="row">

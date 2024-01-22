@@ -6,7 +6,7 @@ include('connect.php');
 if (isset($_POST['new_email'], $_POST['new_password'], $_POST['nom'], $_POST['adresse'], $_POST['ville'], $_POST['code_postal'], $_POST['telephone'])) {
     try {
         $new_email = $_POST['new_email'];
-        $new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT); // Hash the password
+        $new_password = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
         $nom = $_POST['nom'];
         $adresse = $_POST['adresse'];
         $ville = $_POST['ville'];

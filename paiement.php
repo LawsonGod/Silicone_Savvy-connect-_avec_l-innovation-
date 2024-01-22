@@ -6,15 +6,9 @@ if (!isset($_SESSION['email'])) {
     header('Location: connexion_inscription.php');
     exit;
 }
-
 $email = $_SESSION['email'];
 ?>
-
-<!DOCTYPE html>
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
-
 <div class="container">
     <h2 class="my-4">Paiement par Carte Bleue</h2>
 
@@ -38,7 +32,6 @@ $email = $_SESSION['email'];
         <button type="submit" class="btn btn-primary">Payer</button>
     </form>
 </div>
-
 <?php include('script_jquery.php'); ?>
 <?php include('footer.php'); ?>
 </body>

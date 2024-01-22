@@ -3,10 +3,6 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<?php include('head.php'); ?>
-<body>
 <?php include('header_nav.php'); ?>
 <div class="container-fluid mt-5">
     <h1 class="text-center">Exprimez vos choix</h1>

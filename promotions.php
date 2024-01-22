@@ -32,10 +32,6 @@ try {
     echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
 }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
 <div class="container mt-4">
     <h2>Promotions</h2>
