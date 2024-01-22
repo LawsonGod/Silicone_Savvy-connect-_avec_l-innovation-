@@ -32,7 +32,7 @@ try {
     echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
 }
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container mt-4">
     <h2>Promotions</h2>
     <div class="row">

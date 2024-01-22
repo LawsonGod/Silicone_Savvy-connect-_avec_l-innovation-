@@ -11,7 +11,7 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
     $message .= "<a href='index.php'>Retour à la page d'accueil</a>";
 }
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container mt-5">
     <?php echo $message; ?>
 </div>

@@ -37,7 +37,7 @@ if ($client_id) {
     // exit();
 }
 ?>
-<?php include('header_nav.php'); ?>
+<?php include('head_header_nav.php'); ?>
 <div class="container">
     <h2>Informations du compte</h2>
     <table class="table table-bordered">

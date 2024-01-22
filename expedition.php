@@ -12,7 +12,7 @@ $query = $dbh->prepare("SELECT adresse, ville, code_postal FROM clients WHERE em
 $query->execute(['email' => $_SESSION['email']]);
 $userInfo = $query->fetch(PDO::FETCH_ASSOC);
 ?>
-<?php include('header_nav.php'); ?>
+<?php include('head_header_nav.php'); ?>
 <div class="container mt-4">
     <h1 class="my-4">Informations de Livraison</h1>
     <p>Adresse: <strong><?php echo htmlspecialchars($userInfo['adresse']); ?></strong></p>

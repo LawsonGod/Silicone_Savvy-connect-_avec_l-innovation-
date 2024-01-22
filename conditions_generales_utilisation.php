@@ -3,7 +3,7 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuBurger" aria-controls="menuBurger" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
 </button>

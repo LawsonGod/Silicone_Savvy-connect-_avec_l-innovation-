@@ -33,7 +33,7 @@ if (isset($product_id)) {
     $evaluations = $stmtEvaluations->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container mt-4">
     <?php if ($produit): ?>
         <div class="card">

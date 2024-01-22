@@ -4,7 +4,6 @@ global $dbh;
 include('connect.php');
 session_start();
 
-// Redirection si l'utilisateur n'est pas un administrateur
 if (!isset($_SESSION["user_type"]) || $_SESSION["user_type"] !== "administrateur") {
     header('Location: index.php');
     exit;
@@ -90,7 +89,7 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
