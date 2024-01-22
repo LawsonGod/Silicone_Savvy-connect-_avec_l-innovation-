@@ -121,7 +121,7 @@ if ($client_id) {
                 <td class="align-middle"><?= htmlspecialchars($evaluation['date_publication']) ?></td>
                 <td class="align-middle">
                     <div class="d-flex flex-column">
-                        <a href="#?id=<?= $evaluation['id'] ?>" class="btn btn-primary mb-1">Éditer</a>
+                        <a href="editer_commentaire.php?id=<?= $evaluation['id'] ?>" class="btn btn-primary mb-1">Éditer</a>
                         <a href="supprimer_commentaire.php?id=<?= $evaluation['id'] ?>" class="btn btn-danger">Supprimer</a>
                     </div>
                 </td>
