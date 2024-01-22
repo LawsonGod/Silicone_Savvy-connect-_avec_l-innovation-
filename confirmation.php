@@ -15,7 +15,4 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
 <div class="container mt-5">
     <?php echo $message; ?>
 </div>
-</body>
 <?php include('footer.php'); ?>
-</html>
-

@@ -1,10 +1,10 @@
 <?php
     $pseudo = 'root';
-    $password = 'root';
-    $dbh = new PDO ('mysql:host=localhost:8889;dbname=projetphp', $pseudo,$password);
+    $password = '';
+    $dbh = new PDO ('mysql:host=localhost:3306;dbname=projetphp', $pseudo,$password);
 //    print_r($dbh);
 $dsn =
-    'mysql:host=localhost:8889;dbname=projetphp';
+    'mysql:host=localhost:3306;dbname=projetphp';
 
 try {
     $dbh =

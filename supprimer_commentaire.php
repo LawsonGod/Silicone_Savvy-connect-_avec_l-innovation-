@@ -1,12 +1,11 @@
 <?php
+// Inclusion de la session, de la connexion à la base de données et d'autres fichiers nécessaires
+global $dbh;
 session_start();
 include('connect.php');
 
-$commentaireId = isset($_GET['id']) ? $_GET['id'] : null;
-$commentaire = null;
-
-if ($commentaireId) {
-    // Récupérer les informations du commentaire
+// Fonction pour obtenir les informations d'un commentaire par son identifiant
+function obtenirCommentaireParId($dbh, $commentaireId) {
     $stmtCommentaire = $dbh->prepare("SELECT e.*, p.nom AS produit_nom 
     FROM evaluations e
     JOIN produits p ON e.produit_id = p.id
@@ -14,13 +13,23 @@ if ($commentaireId) {
 
     $stmtCommentaire->bindParam(':id', $commentaireId, PDO::PARAM_INT);
     $stmtCommentaire->execute();
-    $commentaire = $stmtCommentaire->fetch(PDO::FETCH_ASSOC);
+    return $stmtCommentaire->fetch(PDO::FETCH_ASSOC);
 }
 
+// Vérification de l'existence de l'identifiant du commentaire dans l'URL
+$commentaireId = isset($_GET['id']) ? $_GET['id'] : null;
+$commentaire = null;
+
+// Si un identifiant de commentaire est fourni, récupérer les informations du commentaire
+if ($commentaireId) {
+    $commentaire = obtenirCommentaireParId($dbh, $commentaireId);
+}
+
+// Vérification de la soumission du formulaire de suppression
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $commentaireId = $_POST['id'];
 
-    // Exécuter la requête de suppression
+    // Exécution de la requête de suppression du commentaire
     $stmt = $dbh->prepare("DELETE FROM evaluations WHERE id = :id");
     $stmt->bindParam(':id', $commentaireId, PDO::PARAM_INT);
     $stmt->execute();
@@ -30,41 +39,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <!-- Inclusion des styles Bootstrap -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
+<?php include('head_header_nav.php');?>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
             <?php if ($commentaire): ?>
                 <div class="text-center mt-5">
                     <h2>Confirmer la suppression</h2>
-                    <p>Êtes-vous sûr de vouloir supprimer le commentaire suivant sur le produit "<?= htmlspecialchars($commentaire['produit_nom'] ?? 'Inconnu') ?>" ?</p>
+                    <p>Êtes-vous sûr de vouloir supprimer le commentaire suivant sur le produit "<?= htmlspecialchars(isset($commentaire['produit_nom']) ?
+                            $commentaire['produit_nom'] :
+                            'Inconnu') ?>" ?</p>
                     <blockquote class="blockquote">
-                        <p class="mb-0"><?= htmlspecialchars($commentaire['commentaire'] ?? '') ?></p>
-                        <footer class="blockquote-footer">Produit : <?= htmlspecialchars($commentaire['produit_nom'] ?? 'Inconnu') ?></footer>
+                        <p class="mb-0"><?= htmlspecialchars(isset($commentaire['commentaire']) ?
+                                $commentaire['commentaire'] :
+                                '') ?></p>
+                        <br>
+                        <footer class="blockquote-footer">Produit : <?= htmlspecialchars(isset($commentaire['produit_nom']) ?
+                                $commentaire['produit_nom'] :
+                                'Inconnu') ?></footer>
                     </blockquote>
-                        <form action="supprimer_commentaire.php" method="post">
-                            <input type="hidden" name="id" value="<?= htmlspecialchars($commentaire['id']?? '') ?>">
-                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                            <a href="index.php" class="btn btn-secondary">Annuler</a>
-                        </form>
+                    <form action="supprimer_commentaire.php" method="post">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars(isset($commentaire['id']) ?
+                            $commentaire['id'] :
+                            '') ?>">
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                        <a href="index.php" class="btn btn-secondary">Annuler</a>
+                    </form>
                 </div>
             <?php else: ?>
-                
-                    <p class="text-center mt-5">Commentaire non trouvé.</p>
-                <?php endif; ?>
-            </div>
+                <p class="text-center mt-5">Commentaire non trouvé.</p>
+            <?php endif; ?>
         </div>
     </div>
-
-    <!-- Scripts Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-</html>
+</div>
+<?php include('footer.php');?>

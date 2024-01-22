@@ -13,6 +13,4 @@ include('connect.php');
         <li>Cette offre est valable tout au long de l'année scolaire.</li>
     </ul>
 </div>
-</body>
 <?php include('footer.php');?>
-</html>

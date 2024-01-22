@@ -12,7 +12,7 @@ $email = $_SESSION['email'];
 <div class="container">
     <h2 class="my-4">Paiement par Carte Bleue</h2>
 
-    <form action="traitement_paiement.php" method="post" id="payment-form">
+    <form action="#" method="post" id="payment-form">
         <div class="mb-3">
             <label for="card-holder-name" class="form-label">Nom sur la carte</label>
             <input type="text" class="form-control" id="card-holder-name" name="card_holder_name" required>
@@ -34,5 +34,3 @@ $email = $_SESSION['email'];
 </div>
 <?php include('script_jquery.php'); ?>
 <?php include('footer.php'); ?>
-</body>
-</html>

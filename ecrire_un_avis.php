@@ -19,6 +19,4 @@ include('connect.php');
         <button type="submit" class="btn btn-primary">Soumettre l'avis</button>
     </form>
 </div>
-</body>
 <?php include('footer.php');?>
-</html>
