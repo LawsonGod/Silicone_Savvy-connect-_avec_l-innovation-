@@ -2,7 +2,6 @@
 global $dbh;
 session_start();
 include('connect.php');
-include('inclusion.php');
 
 if (isset($_POST['product_id']) && isset($_POST['quantite'])) {
     $product_id = $_POST['product_id'];
@@ -57,7 +56,6 @@ if (isset($_POST['product_id']) && isset($_POST['quantite'])) {
             }
         }
     }
-
     header('Location: panier.php');
     exit;
 } else {

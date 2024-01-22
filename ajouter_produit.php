@@ -60,17 +60,26 @@ function ajouterProduit($dbh, $nom, $categorie_id, $marque_id, $prix, $quantite_
     }
 }
 
-// Fonction pour gérer l'ajout de la promotion
-function ajouterPromotion($dbh, $produit_id, $pourcentage_remise) {
-    $sql = "INSERT INTO promotions (produit_id, pourcentage_remise, date_debut, date_fin) VALUES (?, ?, NOW(), NOW())";
+// Fonction pour ajouter la promotion avec des dates de début et de fin
+function ajouterPromotion($dbh, $produit_id, $pourcentage_remise, $date_debut_promo, $date_fin_promo) {
+    $date_debut = new DateTime($date_debut_promo);
+    $date_fin = new DateTime($date_fin_promo);
+
+    // Vérifier que la date de fin est supérieure à la date de début
+    if ($date_fin <= $date_debut) {
+        return "La date de fin de la promotion doit être après la date de début.";
+    }
+
+    $sql = "INSERT INTO promotions (produit_id, pourcentage_remise, date_debut, date_fin) VALUES (?, ?, ?, ?)";
     $stmt = $dbh->prepare($sql);
 
-    if ($stmt->execute([$produit_id, $pourcentage_remise])) {
+    if ($stmt->execute([$produit_id, $pourcentage_remise, $date_debut_promo, $date_fin_promo])) {
         return "La promotion a été ajoutée avec succès.";
     } else {
         return "Erreur lors de l'ajout de la promotion.";
     }
 }
+
 
 // Fonction pour valider que le champ "Prix" est un nombre décimal (double)
 function validerPrix($prix) {
@@ -99,19 +108,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         $message = "Le champ 'Prix' doit contenir un nombre décimal (double).";
     } elseif (!validerQuantiteStock($quantite_stock)) {
         $message = "Le champ 'Quantité en Stock' doit contenir un nombre entier.";
-    }else {
-        $message = ajouterProduit($dbh, $nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description, $image_extension);
-
+    } else {
+        // Ajoutez le bloc de code ici
         if (isset($_POST["en_promotion"]) && isset($_POST["pourcentage_remise"]) && $_POST["pourcentage_remise"] >= 5 && $_POST["pourcentage_remise"] <= 60) {
             $en_promotion = true;
             $pourcentage_remise = $_POST["pourcentage_remise"];
+            $date_debut_promo = $_POST["date_debut_promo"];
+            $date_fin_promo = $_POST["date_fin_promo"];
+
+            // Valider que la date de fin est supérieure à la date de début
+            if (strtotime($date_fin_promo) <= strtotime($date_debut_promo)) {
+                $message .= " La date de fin de la promotion doit être après la date de début.";
+            } else {
+                if ($en_promotion) {
+                    $message .= " " . ajouterPromotion($dbh, $dbh->lastInsertId(), $pourcentage_remise, $date_debut_promo, $date_fin_promo);
+                }
+            }
+        }
+        if ($message === '') {
+            $message = ajouterProduit($dbh, $nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description, $image_extension);
 
             if ($en_promotion) {
-                $message .= " " . ajouterPromotion($dbh, $dbh->lastInsertId(), $pourcentage_remise);
+                $message .= " " . ajouterPromotion($dbh, $dbh->lastInsertId(), $pourcentage_remise, $date_debut_promo, $date_fin_promo);
             }
         }
     }
 }
+
 ?>
 <?php include('head_header_nav.php'); ?>
 <div class="container">
@@ -159,6 +182,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         <div class="form-group" id="champ_remise" style="display:none;">
             <label for="pourcentage_remise">Pourcentage de Remise</label>
             <input type="number" name="pourcentage_remise" class="form-control" min="5" max="60">
+        </div>
+        <div class="form-group" id="champ_remise" style="display:none;">
+        <label for="date_debut_promo">Date de Début de la Promotion</label>
+            <input type="date" name="date_debut_promo" class="form-control" required>
+        </div>
+        <div class="form-group" id="champ_remise" style="display:none;">
+            <label for="date_fin_promo">Date de Fin de la Promotion</label>
+            <input type="date" name="date_fin_promo" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="image">Image</label>
