@@ -7,7 +7,11 @@ $commentaire = null;
 
 if ($commentaireId) {
     // Récupérer les informations du commentaire
-    $stmtCommentaire = $dbh->prepare("SELECT * FROM evaluations WHERE id = :id");
+    $stmtCommentaire = $dbh->prepare("SELECT e.*, p.nom AS produit_nom 
+    FROM evaluations e
+    JOIN produits p ON e.produit_id = p.id
+    WHERE e.id = :id");
+
     $stmtCommentaire->bindParam(':id', $commentaireId, PDO::PARAM_INT);
     $stmtCommentaire->execute();
     $commentaire = $stmtCommentaire->fetch(PDO::FETCH_ASSOC);
@@ -36,21 +40,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <?php if ($commentaire): ?>
-                    <div class="text-center mt-5">
-                        <h2>Confirmer la suppression</h2>
-                        <p>Êtes-vous sûr de vouloir supprimer le commentaire suivant ?</p>
-                        <blockquote class="blockquote">
-                            <p class="mb-0"><?= htmlspecialchars($commentaire['commentaire']?? '') ?></p>
-                            <footer class="blockquote-footer"><?= htmlspecialchars($commentaire['nom']?? '') ?></footer>
-                        </blockquote>
+            <?php if ($commentaire): ?>
+                <div class="text-center mt-5">
+                    <h2>Confirmer la suppression</h2>
+                    <p>Êtes-vous sûr de vouloir supprimer le commentaire suivant sur le produit "<?= htmlspecialchars($commentaire['produit_nom'] ?? 'Inconnu') ?>" ?</p>
+                    <blockquote class="blockquote">
+                        <p class="mb-0"><?= htmlspecialchars($commentaire['commentaire'] ?? '') ?></p>
+                        <footer class="blockquote-footer">Produit : <?= htmlspecialchars($commentaire['produit_nom'] ?? 'Inconnu') ?></footer>
+                    </blockquote>
                         <form action="supprimer_commentaire.php" method="post">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($commentaire['id']?? '') ?>">
                             <button type="submit" class="btn btn-danger">Supprimer</button>
                             <a href="index.php" class="btn btn-secondary">Annuler</a>
                         </form>
-                    </div>
-                <?php else: ?>
+                </div>
+            <?php else: ?>
+                
                     <p class="text-center mt-5">Commentaire non trouvé.</p>
                 <?php endif; ?>
             </div>
