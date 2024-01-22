@@ -43,11 +43,8 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
     $contenuPanier = "<tr><td colspan='5'>Votre panier est vide.</td></tr>";
 }
 ?>
-
-<!DOCTYPE html>
-<?php include('head.php'); ?>
-<body>
 <?php include('header_nav.php'); ?>
+<?php var_dump($_SESSION);?>
 <div class="container">
     <?php if (isset($_SESSION['erreur'])): ?>
         <p class="alert alert-danger"><?php echo $_SESSION['erreur']; ?></p>

@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
 <div class="container mt-5">
     <div class="row">

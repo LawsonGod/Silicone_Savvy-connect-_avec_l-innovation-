@@ -23,7 +23,7 @@ try {
         $products .= '<p class="card-text">Ancien Prix: <del>' . htmlspecialchars($row['prix']) . ' €</del></p>';
         $products .= '<p class="card-text text-danger">Remise: ' . htmlspecialchars($row['pourcentage_remise']) . '%</p>';
         $products .= '<p class="card-text">Nouveau Prix: ' . $nouveauPrix . ' €</p>';
-        $products .= '<p class="card-text">' . htmlspecialchars($row['description']) . '</p>';
+        $products .= '<p class="card-text" style="text-align: justify;">' . htmlspecialchars($row['description']) . '</p>';
         $products .= '</div>';
         $products .= '</div>';
         $products .= '</div>';
@@ -32,10 +32,6 @@ try {
     echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
 }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
 <div class="container mt-4">
     <h2>Promotions</h2>

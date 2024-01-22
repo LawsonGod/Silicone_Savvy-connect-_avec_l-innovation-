@@ -90,9 +90,6 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<!DOCTYPE html>
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
 <div class="container-fluid">
     <div class="row">

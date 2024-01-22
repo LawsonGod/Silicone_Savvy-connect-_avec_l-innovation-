@@ -3,9 +3,6 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<!DOCTYPE html>
-<?php include('head.php');?>
-<body>
 <?php include('header_nav.php');?>
 <div class="container">
     <h1>Lire les avis</h1>
