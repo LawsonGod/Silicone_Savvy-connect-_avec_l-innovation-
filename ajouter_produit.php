@@ -134,7 +134,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         }
     }
 }
-
 ?>
 <?php include('head_header_nav.php'); ?>
 <div class="container">
@@ -199,9 +198,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         <button type="button" class="btn btn-secondary" onclick="annulerAjout()">Annuler</button>
     </form>
 </div>
-<?php include('footer.php'); ?>
-</body>
-</html>
 <script>
     // Fonction pour afficher ou masquer le champ "Pourcentage de Remise"
     function afficherMasquerChampRemise() {
@@ -223,3 +219,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         window.location.href = 'admin.php';
     }
 </script>
+<?php include('footer.php'); ?>

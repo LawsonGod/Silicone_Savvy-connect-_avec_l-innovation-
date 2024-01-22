@@ -1,19 +1,27 @@
 <?php
+// Inclure la connexion à la base de données
 global $dbh;
 require 'connect.php';
+
+// Récupérer l'identifiant de la marque depuis l'URL
 $marque_id = isset($_GET['marque_id']) ? $_GET['marque_id'] : 0;
 $marque_nom = '';
+
 try {
+    // Récupérer le nom de la marque à partir de son identifiant
     $stmtMarque = $dbh->prepare("SELECT nom FROM marques WHERE id = :marque_id");
     $stmtMarque->bindParam(':marque_id', $marque_id, PDO::PARAM_INT);
     $stmtMarque->execute();
+
     if ($stmtMarque->rowCount() > 0) {
         $marque_nom = $stmtMarque->fetch(PDO::FETCH_ASSOC)['nom'];
     }
 } catch (PDOException $e) {
     echo "Erreur lors de la récupération du nom de la marque : " . $e->getMessage();
 }
+
 try {
+    // Sélectionner les produits de la marque avec éventuelle remise
     $stmt = $dbh->prepare("
         SELECT p.*, 
                pr.pourcentage_remise,
@@ -27,7 +35,9 @@ try {
     ");
     $stmt->bindParam(':marque_id', $marque_id, PDO::PARAM_INT);
     $stmt->execute();
+
     $products = '';
+
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $products .= '<div class="col-md-4 mb-4">';
         $products .= '<div class="card">';
@@ -38,14 +48,15 @@ try {
 
         if (isset($row['pourcentage_remise']) && $row['pourcentage_remise'] > 0) {
             $nouveauPrix = $row['prix'] - ($row['prix'] * $row['pourcentage_remise'] / 100);
-            $nouveauPrix = number_format($nouveauPrix, 2); // Round to 2 decimal places
+            $nouveauPrix = number_format($nouveauPrix, 2); // Arrondir à 2 décimales
 
             $products .= '<p class="card-text">Ancien Prix: <del>' . htmlspecialchars($row['prix']) . ' €</del></p>';
             $products .= '<p class="card-text text-danger">Remise: ' . htmlspecialchars($row['pourcentage_remise']) . '%</p>';
-            $products .= '<p class="card-text">Nouveau Prix: ' . $nouveauPrix . ' €</p>';
+            $products .= '<p class="card-text text-danger">Nouveau Prix: ' . $nouveauPrix . ' €</p>';
         } else {
             $products .= '<p class="card-text">Prix: ' . htmlspecialchars($row['prix']) . ' €</p>';
         }
+
         $products .= '<p class="card-text" style="text-align: justify;">' . htmlspecialchars($row['description']) . '</p>';
         $products .= '</div>';
         $products .= '</div>';
@@ -63,5 +74,3 @@ try {
     </div>
 </div>
 <?php include('footer.php');?>
-</body>
-</html>

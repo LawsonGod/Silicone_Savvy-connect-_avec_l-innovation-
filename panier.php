@@ -2,6 +2,7 @@
 session_start();
 include('connect.php');
 
+// Fonction pour calculer le total du panier
 function calculerTotalPanier() {
     $total = 0;
     if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
@@ -14,6 +15,7 @@ function calculerTotalPanier() {
     return $total;
 }
 
+// Suppression d'un produit du panier
 if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
     if (isset($_SESSION['panier'][$_GET['id']])) {
         unset($_SESSION['panier'][$_GET['id']]);
@@ -44,7 +46,7 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
 }
 ?>
 <?php include('head_header_nav.php'); ?>
-<?php var_dump($_SESSION);?>
+<?php //var_dump($_SESSION);?>
 <div class="container">
     <?php if (isset($_SESSION['erreur'])): ?>
         <p class="alert alert-danger"><?php echo $_SESSION['erreur']; ?></p>
@@ -80,5 +82,3 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
 </div>
 <?php include('script_jquery.php'); ?>
 <?php include('footer.php'); ?>
-</body>
-</html>

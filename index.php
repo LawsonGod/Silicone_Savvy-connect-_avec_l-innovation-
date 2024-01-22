@@ -1,30 +1,36 @@
 <?php
+// Inclure la session et la connexion à la base de données
 global $dbh;
 session_start();
-
 include('connect.php');
 
-$msg = '';
+// Variables pour les filtres et l'ordre de tri
 $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
 $filtreNote = isset($_POST['filtreNote']) ? $_POST['filtreNote'] : '';
 
+// Fonction pour vérifier si une valeur est cochée
 function isChecked($value, $postArray) {
     return in_array($value, $postArray) ? 'checked' : '';
 }
 
 try {
+    // Vérifier la connexion à la base de données
     if ($dbh === null) {
         die("Erreur de connexion à la base de données.");
     }
+
+    // Récupérer les catégories depuis la base de données
     $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
     $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
 
+    // Récupérer les marques depuis la base de données
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
+    // Construction de la requête SQL de base pour les produits
     $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
     COALESCE(AVG(evaluations.note), 0) AS note_moyenne,
     COALESCE(promotions.pourcentage_remise, 0) AS pourcentage_remise
@@ -33,21 +39,25 @@ try {
     LEFT JOIN promotions ON produits.id = promotions.produit_id
     AND NOW() BETWEEN promotions.date_debut AND promotions.date_fin';
 
+    // Tableaux pour stocker les conditions et les paramètres de requête
     $conditions = [];
     $params = [];
 
+    // Filtrage par mot-clé
     if (isset($_POST['keyword']) && !empty($_POST['keyword'])) {
         $keyword = '%' . $_POST['keyword'] . '%';
         $conditions[] = "nom LIKE ?";
         $params[] = $keyword;
     }
 
+    // Filtrage par marques sélectionnées
     if (!empty($filtreMarques)) {
         $marquesPlaceholder = implode(', ', array_fill(0, count($filtreMarques), '?'));
         $conditions[] = "marque_id IN ($marquesPlaceholder)";
         $params = array_merge($params, $filtreMarques);
     }
 
+    // Filtrage par catégories sélectionnées
     if (!empty($filtreCategories)) {
         $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), '?'));
         $conditions[] = "categorie_id IN ($categoriesPlaceholder)";
@@ -67,9 +77,12 @@ try {
         }
     }
 
+    // Ajout des conditions à la requête SQL
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
+
+    // Groupement et conditions HAVING pour la note moyenne
     $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix ';
     $havingConditions = [];
 
@@ -79,9 +92,12 @@ try {
         $havingConditions[] = 'COALESCE(AVG(evaluations.note), 0) < 3';
     }
 
+    // Ajout des conditions HAVING à la requête SQL
     if (!empty($havingConditions)) {
         $sql .= ' HAVING ' . implode(' AND ', $havingConditions);
     }
+
+    // Gestion de l'ordre de tri
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
         if ($orderBy == 'asc') {
@@ -93,7 +109,9 @@ try {
         $sql .= ' ORDER BY id ASC';
     }
 
+    // Préparation et exécution de la requête SQL
     $stmt = $dbh->prepare($sql);
+
     try {
         if (!$stmt) {
             throw new PDOException("La préparation de la requête a échoué.");
@@ -104,6 +122,7 @@ try {
         echo "Erreur : " . $e->getMessage();
     }
 
+    // Génération de la liste de produits à afficher
     if ($stmt->rowCount() === 0) {
         $message = '<p>Aucun résultat trouvé.</p>';
     } else {
@@ -142,6 +161,7 @@ try {
     $message = 'Une erreur est survenue lors de la récupération des données : ' . $e->getMessage();
 }
 
+// Fermeture de la connexion à la base de données
 $dbh = null;
 ?>
 <?php include('head_header_nav.php');?>
@@ -217,6 +237,4 @@ $dbh = null;
         </div>
     </div>
 </div>
-</body>
 <?php include('footer.php');?>
-</html>

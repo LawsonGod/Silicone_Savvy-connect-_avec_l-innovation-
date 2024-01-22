@@ -222,7 +222,6 @@ include('connect.php');
         </div>
     </div>
 </div>
-<?php include('footer.php'); ?>
 <script>
     $(document).ready(function() {
         $('.collapse').hide();
@@ -233,5 +232,4 @@ include('connect.php');
         });
     });
 </script>
-</body>
-</html>
+<?php include('footer.php'); ?>

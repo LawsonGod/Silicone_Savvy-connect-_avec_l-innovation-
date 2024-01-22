@@ -60,6 +60,4 @@ include('connect.php');
         </li>
     </ul>
 </div>
-</body>
 <?php include('footer.php');?>
-</html>

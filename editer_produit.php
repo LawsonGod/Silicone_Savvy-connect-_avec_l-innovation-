@@ -149,16 +149,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["editer_produit"])) {
 ?>
 <?php include('head_header_nav.php'); ?>
 <?php
-var_dump($nom);
-var_dump($categorie_id);
-var_dump($marque_id);
-var_dump($prix);
-var_dump($quantite_stock);
-var_dump($description);
-var_dump($pourcentage_remise);
-var_dump($date_debut_promo);
-var_dump($date_fin_promo);
-?>
+//var_dump($nom);
+//var_dump($categorie_id);
+//var_dump($marque_id);
+//var_dump($prix);
+//var_dump($quantite_stock);
+//var_dump($description);
+//var_dump($pourcentage_remise);
+//var_dump($date_debut_promo);
+//var_dump($date_fin_promo);
+//?>
 <div class="container">
     <h1>Éditer un Produit</h1>
     <?php if ($message !== '') : ?>
@@ -215,5 +215,3 @@ var_dump($date_fin_promo);
     </form>
 </div>
 <?php include('footer.php'); ?>
-</body>
-</html>

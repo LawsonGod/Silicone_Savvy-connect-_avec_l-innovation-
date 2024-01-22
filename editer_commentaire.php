@@ -1,50 +1,44 @@
 <?php
-
+// Inclusion du fichier de connexion à la base de données et initialisation de la session
+global $dbh;
 session_start();
-include ('connect.php'); 
+include('connect.php');
 
+// Récupération de l'identifiant du commentaire à modifier depuis la requête GET
 $commentaireId = isset($_GET['id']) ? $_GET['id'] : null;
 $commentaire = null;
 
-try{
+try {
+    // Récupération des informations du commentaire depuis la base de données
     if ($commentaireId) {
         $stmtCommentaire = $dbh->prepare("SELECT e.*, p.nom AS produit_nom, p.image AS produit_image FROM evaluations e JOIN produits p ON e.produit_id = p.id WHERE e.id = :id");
         $stmtCommentaire->bindParam(':id', $commentaireId, PDO::PARAM_INT);
         $stmtCommentaire->execute();
         $commentaire = $stmtCommentaire->fetch(PDO::FETCH_ASSOC);
     }
-}catch (PDOException $e){
+} catch (PDOException $e) {
     echo "Erreur de base de données : " . $e->getMessage();
 }
 
+// Traitement du formulaire de modification du commentaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $commentaireId = $_POST['id'];
     $nouveauCommentaire = $_POST['commentaire'];
     $nouvelleNote = $_POST['note'];
 
-    // Exécuter la requête de mise à jour du commentaire
+    // Exécuter la requête de mise à jour du commentaire dans la base de données
     $stmt = $dbh->prepare("UPDATE evaluations SET commentaire = :commentaire, note = :note WHERE id = :id");
     $stmt->bindParam(':commentaire', $nouveauCommentaire, PDO::PARAM_STR);
     $stmt->bindParam(':note', $nouvelleNote, PDO::PARAM_INT);
     $stmt->bindParam(':id', $commentaireId, PDO::PARAM_INT);
     $stmt->execute();
 
-    // Redirection après la modification
+    // Redirection après la modification vers la page de compte client
     header('Location: compte_client.php');
     exit();
 }
-
 ?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Éditer le commentaire</title>
-   
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-   
+<?php include('head_header_nav.php'); ?>
    <style>
         body {
             background-color: #f4f4f4; 
@@ -102,8 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             margin-bottom: 20px;
         }
     </style>
-</head>
-<body>
     <a href="compte_client.php" class="return-link">← Retour</a>
     <div class="edit-form-container">
         <h2>Modifier votre avis</h2>
@@ -130,11 +122,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             <p class="text-center mt-5">Commentaire non trouvé ou non spécifié.</p>
         <?php endif; ?>
     </div>
-</body>
-
-    <!-- Scripts Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/
-
-   
+<?php include('footer.php'); ?>
