@@ -3,7 +3,7 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<?php include('header_nav.php'); ?>
+<?php include('head_header_nav.php'); ?>
 <div class="container mt-5">
     <h1 class="mb-4">MENTIONS LÉGALES</h1>
     <div class="row">

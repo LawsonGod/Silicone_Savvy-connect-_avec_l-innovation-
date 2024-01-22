@@ -8,7 +8,7 @@ if (!isset($_SESSION['email'])) {
 }
 $email = $_SESSION['email'];
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container">
     <h2 class="my-4">Paiement par Carte Bleue</h2>
 

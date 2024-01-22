@@ -386,11 +386,8 @@ VALUES
 CREATE TABLE paniers (
     id INT PRIMARY KEY AUTO_INCREMENT,
     utilisateur_id INT NOT NULL,
-    produit_id INT NOT NULL,
-    quantite INT NOT NULL DEFAULT 1,
     date_ajout DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (utilisateur_id) REFERENCES clients(id),
-    FOREIGN KEY (produit_id) REFERENCES produits(id)
+    FOREIGN KEY (utilisateur_id) REFERENCES clients(id)
 ) ENGINE InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE paniers_produits (

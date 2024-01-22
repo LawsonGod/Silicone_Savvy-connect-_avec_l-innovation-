@@ -3,7 +3,7 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container">
     <h1>Recrutement</h1>
     <p>Nous sommes toujours à la recherche de personnes talentueuses pour rejoindre notre équipe. Consultez nos offres d'emploi actuelles et postulez dès aujourd'hui :</p>

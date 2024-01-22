@@ -4,7 +4,6 @@ global $dbh;
 include('connect.php');
 session_start();
 
-// Redirection si l'utilisateur n'est pas un administrateur
 if (!isset($_SESSION["user_type"]) || $_SESSION["user_type"] !== "administrateur") {
     header('Location: index.php');
     exit;
@@ -90,7 +89,24 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-<?php include('header_nav.php');?>
+<script>
+    function confirmerLaSuppression(productId) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer le produit ?")) {
+            $.ajax({
+                type: 'POST',
+                url: 'supprimer_produit.php',
+                data: { productId: productId },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    }
+</script>
+<?php include('head_header_nav.php');?>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -209,7 +225,8 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <input type="hidden" name="delete_product_id" value="<?php echo htmlspecialchars(isset($produit['id']) ?
                                         $produit['id'] :
                                         ''); ?>">
-                                    <button type="submit" name="supprimer_produit" class="btn btn-danger w-100">Supprimer</button>
+                                    <button class="btn btn-danger" onclick="confirmerLaSuppression(<?php echo $produit['id']; ?>)
+                                            ">Supprimer</button>
                                 </form>
                             </div>
                         </td>
@@ -217,7 +234,6 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php
                 }
                 ?>
-
                 </tbody>
             </table>
         </div>

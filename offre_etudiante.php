@@ -3,7 +3,7 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container">
     <h1>Offre Étudiante</h1>
     <p>Voici notre offre spéciale pour les étudiants :</p>

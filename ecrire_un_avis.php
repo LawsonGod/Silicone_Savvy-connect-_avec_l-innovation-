@@ -3,7 +3,7 @@ global $dbh;
 session_start();
 include('connect.php');
 ?>
-<?php include('header_nav.php');?>
+<?php include('head_header_nav.php');?>
 <div class="container">
     <h1>Écrire un avis</h1>
     <p>Partagez votre avis avec nous :</p>
