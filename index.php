@@ -32,6 +32,7 @@ try {
     LEFT JOIN evaluations ON produits.id = evaluations.produit_id
     LEFT JOIN promotions ON produits.id = promotions.produit_id
     AND NOW() BETWEEN promotions.date_debut AND promotions.date_fin';
+
     $conditions = [];
     $params = [];
 
