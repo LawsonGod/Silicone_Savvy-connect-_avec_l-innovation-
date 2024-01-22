@@ -245,18 +245,13 @@ $produits = obtenirProduitsFiltres($dbh, $_POST);
                                 ''); ?></td>
                         <td class="align-middle">
                             <div class="d-flex flex-column">
-                                <form action="admin.php" method="POST">
-                                    <input type="hidden" name="edit_product_id" value="<?php echo htmlspecialchars(isset($produit['id']) ?
-                                        $produit['id'] :
-                                        ''); ?>">
-                                    <button type="submit" name="editer_produit" class="btn btn-primary mb-2 w-100">Éditer</button>
+                                <form action="editer_produit.php" method="POST">
+                                    <input type="hidden" name="edit_product_id" value="<?php echo htmlspecialchars($produit['id']); ?>">
+                                    <button type="submit" class="btn btn-primary mb-2 w-100">Éditer</button>
                                 </form>
                                 <form action="admin.php" method="POST">
-                                    <input type="hidden" name="delete_product_id" value="<?php echo htmlspecialchars(isset($produit['id']) ?
-                                        $produit['id'] :
-                                        ''); ?>">
-                                    <button class="btn btn-danger" onclick="confirmerLaSuppression(<?php echo $produit['id']; ?>)
-                                            ">Supprimer</button>
+                                    <input type="hidden" name="delete_product_id" value="<?php echo htmlspecialchars(isset($produit['id']) ? $produit['id'] : ''); ?>">
+                                    <button class="btn btn-danger" onclick="confirmerLaSuppression(<?php echo $produit['id']; ?>)">Supprimer</button>
                                 </form>
                             </div>
                         </td>
