@@ -2,6 +2,7 @@
 // Inclure la session et la connexion à la base de données
 global $dbh;
 session_start();
+
 include('connect.php');
 
 // Variables pour les filtres et l'ordre de tri
@@ -17,7 +18,7 @@ function isChecked($value, $postArray) {
 }
 
 try {
-    // Vérifier la connexion à la base de données
+// Vérifier la connexion à la base de données
     if ($dbh === null) {
         die("Erreur de connexion à la base de données.");
     }
@@ -26,11 +27,11 @@ try {
     $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
     $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
 
-    // Récupérer les marques depuis la base de données
+// Récupérer les marques depuis la base de données
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-    // Construction de la requête SQL de base pour les produits
+// Construction de la requête SQL de base pour les produits
     $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
     COALESCE(AVG(evaluations.note), 0) AS note_moyenne,
     COALESCE(promotions.pourcentage_remise, 0) AS pourcentage_remise
@@ -43,21 +44,21 @@ try {
     $conditions = [];
     $params = [];
 
-    // Filtrage par mot-clé
+// Filtrage par mot-clé
     if (isset($_POST['keyword']) && !empty($_POST['keyword'])) {
         $keyword = '%' . $_POST['keyword'] . '%';
         $conditions[] = "nom LIKE ?";
         $params[] = $keyword;
     }
 
-    // Filtrage par marques sélectionnées
+// Filtrage par marques sélectionnées
     if (!empty($filtreMarques)) {
         $marquesPlaceholder = implode(', ', array_fill(0, count($filtreMarques), '?'));
         $conditions[] = "marque_id IN ($marquesPlaceholder)";
         $params = array_merge($params, $filtreMarques);
     }
 
-    // Filtrage par catégories sélectionnées
+// Filtrage par catégories sélectionnées
     if (!empty($filtreCategories)) {
         $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), '?'));
         $conditions[] = "categorie_id IN ($categoriesPlaceholder)";
@@ -77,7 +78,7 @@ try {
         }
     }
 
-    // Ajout des conditions à la requête SQL
+// Ajout des conditions à la requête SQL
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
@@ -92,7 +93,7 @@ try {
         $havingConditions[] = 'COALESCE(AVG(evaluations.note), 0) < 3';
     }
 
-    // Ajout des conditions HAVING à la requête SQL
+// Ajout des conditions HAVING à la requête SQL
     if (!empty($havingConditions)) {
         $sql .= ' HAVING ' . implode(' AND ', $havingConditions);
     }
@@ -109,7 +110,7 @@ try {
         $sql .= ' ORDER BY id ASC';
     }
 
-    // Préparation et exécution de la requête SQL
+// Préparation et exécution de la requête SQL
     $stmt = $dbh->prepare($sql);
 
     try {
@@ -122,7 +123,7 @@ try {
         echo "Erreur : " . $e->getMessage();
     }
 
-    // Génération de la liste de produits à afficher
+// Génération de la liste de produits à afficher
     if ($stmt->rowCount() === 0) {
         $message = '<p>Aucun résultat trouvé.</p>';
     } else {
@@ -165,6 +166,47 @@ try {
 $dbh = null;
 ?>
 <?php include('head_header_nav.php');?>
+
+<div id="#myCarousel" class="carousel slide " data-bs-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 4"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 5"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 5"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 6"></li>
+    </ol>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="./assets/Image_Silicone_Savyy/Carousel 7.png" class="d-block w-100"  alt="Image 1">
+        </div>
+        <div class="carousel-item">
+            <img src="./assets/Image_Silicone_Savyy/Carousel1.png" class="d-block w-100" alt="Image 2">
+        </div>
+        <div class="carousel-item">
+            <img src="./assets/Image_Silicone_Savyy/Carousel2.png" class="d-block w-100" alt="Image 3">
+        </div>
+        <div class="carousel-item">
+            <img src="./assets/Image_Silicone_Savyy/Carousel3.png" class="d-block w-100" alt="Image 4">
+        </div>
+        <div class="carousel-item">
+            <img src="./assets/Image_Silicone_Savyy/Carousel4.png" class="d-block w-100" alt="Image 5">
+        </div>
+        <div class="carousel-item">
+            <img src="./assets/Image_Silicone_Savyy/Carousel5.png" class="d-block w-100" alt="Image 6">
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Précédent</span>
+    </a>
+    <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Suivant</span>
+    </a>
+</div>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -237,4 +279,13 @@ $dbh = null;
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        $('#myCarousel').carousel();
+        interval: 500;
+    });
+</script>
+
+</body>
 <?php include('footer.php');?>
+</html>

@@ -138,4 +138,38 @@ a:hover {
 }
 .text-red {
     color: red;
+
 }
+
+/* Style du carousel */
+#myCarousel {
+    width: 70%; 
+    margin: 0 auto; 
+}
+
+.carousel-item img {
+    width: 100%; 
+    height: auto; 
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    display: none;
+}
+
+/* .carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #fff; 
+} */
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 0.8;
+}
+.carousel-inner {
+    max-height: 100vw;
+}
+.carousel-indicators {
+    display: none;
+}
+
