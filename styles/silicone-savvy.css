@@ -1,3 +1,17 @@
+main {
+    font-family: sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+main.light-mode {
+    background: #fff;
+    color: #000;
+}
+
+main.dark-mode {
+    background: #21313d;
+    color: #f1f4f7;
+}
 h1 {
     color: blueviolet;
 }
@@ -124,7 +138,9 @@ a:hover {
 }
 .text-red {
     color: red;
+
 }
+
 /* Style du carousel */
 #myCarousel {
     width: 70%; 

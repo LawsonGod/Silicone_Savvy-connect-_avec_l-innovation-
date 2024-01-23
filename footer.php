@@ -1,9 +1,13 @@
 <?php
-echo '</body>
+echo '</main>
 <footer class="container-fluid bg-dark text-white mt-5">
     <div class="container py-4">
         <div class="row">
             <div class="col-md-4">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                    <label class="form-check-label text-white" for="darkModeToggle">Mode Sombre</label>
+                </div>
                 <h5>À propos de nous</h5>
                 <ul class="list-unstyled">
                     <li><a href="./qui_sommes_nous.php" class="text-white">Qui sommes-nous ?</a></li>
@@ -87,5 +91,21 @@ echo '</body>
         </div>
     </div>
 </footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#darkModeToggle").change(function() {
+            console.log("Checkbox change event triggered");
+            if ($(this).is(":checked")) {
+                console.log("Dark mode enabled");
+                $("main").addClass("dark-mode"); 
+            } else {
+                console.log("Dark mode disabled");
+                $("main").removeClass("dark-mode"); 
+            }
+        });
+    });
+</script>
+</body>
 </html>';
 ?>

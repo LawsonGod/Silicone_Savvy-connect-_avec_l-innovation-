@@ -80,17 +80,10 @@ function ajouterPromotion($dbh, $produit_id, $pourcentage_remise, $date_debut_pr
     }
 }
 
-
 // Fonction pour valider que le champ "Prix" est un nombre décimal (double)
 function validerPrix($prix) {
     // Utilisez is_numeric pour vérifier si la valeur est un nombre
     return is_numeric($prix);
-}
-
-// Fonction pour valider que le champ "Quantité en Stock" est un entier
-function validerQuantiteStock($quantite_stock) {
-    // Utilisez is_numeric pour vérifier si la valeur est un nombre
-    return is_numeric($quantite_stock) && intval($quantite_stock) == $quantite_stock;
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
@@ -106,30 +99,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         $message = "Le nom du produit contient des caractères interdits.";
     } elseif (!validerPrix($prix)) {
         $message = "Le champ 'Prix' doit contenir un nombre décimal (double).";
-    } elseif (!validerQuantiteStock($quantite_stock)) {
+    } elseif (!is_numeric($quantite_stock)) { // Correction : Utiliser is_numeric pour valider la quantité en stock
         $message = "Le champ 'Quantité en Stock' doit contenir un nombre entier.";
     } else {
-        // Ajoutez le bloc de code ici
-        if (isset($_POST["en_promotion"]) && isset($_POST["pourcentage_remise"]) && $_POST["pourcentage_remise"] >= 5 && $_POST["pourcentage_remise"] <= 60) {
+        $en_promotion = false;
+
+        if (isset($_POST["en_promotion"])) {
             $en_promotion = true;
             $pourcentage_remise = $_POST["pourcentage_remise"];
-            $date_debut_promo = $_POST["date_debut_promo"];
-            $date_fin_promo = $_POST["date_fin_promo"];
+            $date_debut = $_POST["date_debut"];
+            $date_fin = $_POST["date_fin"];
 
             // Valider que la date de fin est supérieure à la date de début
-            if (strtotime($date_fin_promo) <= strtotime($date_debut_promo)) {
+            if (strtotime($date_fin) <= strtotime($date_debut)) {
                 $message .= " La date de fin de la promotion doit être après la date de début.";
-            } else {
-                if ($en_promotion) {
-                    $message .= " " . ajouterPromotion($dbh, $dbh->lastInsertId(), $pourcentage_remise, $date_debut_promo, $date_fin_promo);
-                }
             }
         }
+
         if ($message === '') {
             $message = ajouterProduit($dbh, $nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description, $image_extension);
 
             if ($en_promotion) {
-                $message .= " " . ajouterPromotion($dbh, $dbh->lastInsertId(), $pourcentage_remise, $date_debut_promo, $date_fin_promo);
+                $message .= " " . ajouterPromotion($dbh, $dbh->lastInsertId(), $pourcentage_remise, $date_debut, $date_fin);
             }
         }
     }
@@ -176,19 +167,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
         </div>
         <div class="form-group">
             <label for="en_promotion">En promotion ?</label>
-            <input type="checkbox" name="en_promotion" id="en_promotion">
+            <input type="checkbox" name="en_promotion" id="en_promotion" onchange="afficherMasquerChampPromotion()">
         </div>
         <div class="form-group" id="champ_remise" style="display:none;">
             <label for="pourcentage_remise">Pourcentage de Remise</label>
             <input type="number" name="pourcentage_remise" class="form-control" min="5" max="60">
         </div>
-        <div class="form-group" id="champ_remise" style="display:none;">
-        <label for="date_debut_promo">Date de Début de la Promotion</label>
-            <input type="date" name="date_debut_promo" class="form-control" required>
+        <div class="form-group" id="champ_promotion" style="display:none;">
+            <label for="date_debut">Date de Début de la Promotion</label>
+            <input type="date" id="date_debut" name="date_debut" class="form-control" pattern="\d{2}/\d{2}/\d{4}" value="<?php echo isset
+            ($date_debut) ? htmlspecialchars($date_debut) : ''; ?>">
         </div>
-        <div class="form-group" id="champ_remise" style="display:none;">
-            <label for="date_fin_promo">Date de Fin de la Promotion</label>
-            <input type="date" name="date_fin_promo" class="form-control" required>
+        <div class="form-group" id="champ_fin_promotion" style="display:none;">
+            <label for="date_fin">Date de Fin de la Promotion</label>
+            <input type="date" id="date_fin" name="date_fin" class="form-control" pattern="\d{2}/\d{2}/\d{4}" value="<?php echo isset
+            ($date_fin) ? htmlspecialchars($date_fin) : ''; ?>">
         </div>
         <div class="form-group">
             <label for="image">Image</label>
@@ -199,24 +192,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
     </form>
 </div>
 <script>
-    // Fonction pour afficher ou masquer le champ "Pourcentage de Remise"
-    function afficherMasquerChampRemise() {
+    // Fonction pour afficher ou masquer les champs de promotion en fonction de l'état de la case à cocher
+    function afficherMasquerChampPromotion() {
         const casePromotion = document.getElementById('en_promotion');
+        const champPromotion = document.getElementById('champ_promotion');
+        const champFinPromotion = document.getElementById('champ_fin_promotion');
         const champRemise = document.getElementById('champ_remise');
 
         if (casePromotion.checked) {
+            champPromotion.style.display = 'block';
+            champFinPromotion.style.display = 'block';
             champRemise.style.display = 'block';
         } else {
+            champPromotion.style.display = 'none';
+            champFinPromotion.style.display = 'none';
             champRemise.style.display = 'none';
         }
     }
 
-    // Appeler la fonction lorsqu'il y a un changement dans la case à cocher
-    document.getElementById('en_promotion').addEventListener('change', afficherMasquerChampRemise);
-
-    // Fonction pour annuler l'ajout et revenir à la page admin.php
-    function annulerAjout() {
-        window.location.href = 'admin.php';
-    }
+    // Appeler la fonction au chargement de la page pour gérer l'affichage initial
+    window.onload = afficherMasquerChampPromotion;
 </script>
 <?php include('footer.php'); ?>

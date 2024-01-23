@@ -1,46 +1,50 @@
 <?php
+global $dbh;
 session_start();
-include('connect.php');
+include('connect.php');  // Assure une connexion à la base de données
 
 // Fonction pour calculer le total du panier
-function calculerTotalPanier() {
+function calculerTotal($dbh) {
     $total = 0;
     if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
-        foreach ($_SESSION['panier'] as $produit) {
-            if (isset($produit['prix'], $produit['quantite'])) {
-                $total += $produit['prix'] * $produit['quantite'];
-            }
+        foreach ($_SESSION['panier'] as $product_id => $quantite) {
+            $stmt = $dbh->prepare("SELECT prix FROM produits WHERE id = :product_id");
+            $stmt->execute([':product_id' => $product_id]);
+            $produit = $stmt->fetch(PDO::FETCH_ASSOC);
+            $total += $produit['prix'] * $quantite;
         }
     }
     return $total;
 }
 
 // Suppression d'un produit du panier
-if (isset($_GET['action']) && $_GET['action'] === 'supprimer' && isset($_GET['id'])) {
-    if (isset($_SESSION['panier'][$_GET['id']])) {
-        unset($_SESSION['panier'][$_GET['id']]);
-    }
+if (isset($_GET['action']) && $_GET['action'] === 'remove' && isset($_GET['id'])) {
+    $product_id = $_GET['id'];
+    unset($_SESSION['panier'][$product_id]);
 }
 
+// Affichage du contenu du panier
 $contenuPanier = '';
 if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
-    foreach ($_SESSION['panier'] as $product_id => $produit) {
-        if (isset($produit['nom'], $produit['prix'], $produit['quantite'])) {
-            $totalProduit = $produit['prix'] * $produit['quantite'];
-            $contenuPanier .= "<tr>
-                                 <td>" . htmlspecialchars($produit['nom']) . "</td>
-                                 <td>" . htmlspecialchars($produit['prix']) . " €</td>
-                                 <td>" . htmlspecialchars($produit['quantite']) . "</td>
-                                 <td>" . htmlspecialchars($totalProduit) . " €</td>
-                                 <td><a href='panier.php?action=supprimer&id=$product_id' class='btn btn-danger btn-sm'>Supprimer</a></td>
-                               </tr>";
-        }
+    foreach ($_SESSION['panier'] as $product_id => $quantite) {
+        $stmt = $dbh->prepare("SELECT nom, prix FROM produits WHERE id = :product_id");
+        $stmt->execute([':product_id' => $product_id]);
+        $produit = $stmt->fetch(PDO::FETCH_ASSOC);
+        $totalProduit = $produit['prix'] * $quantite;
+
+        $contenuPanier .= "<tr>
+                            <td>" . htmlspecialchars($produit['nom']) . "</td>
+                            <td>" . htmlspecialchars($produit['prix']) . "</td>
+                            <td>" . htmlspecialchars($quantite) . "</td>
+                            <td>" . htmlspecialchars($totalProduit) . "</td>
+                            <td><a href='panier.php?action=remove&id=$product_id' class='btn btn-danger'>Supprimer</a></td>
+                         </tr>";
     }
     $contenuPanier .= "<tr>
-                         <td colspan='3'><strong>Total</strong></td>
-                         <td><strong>" . calculerTotalPanier() . " €</strong></td>
-                         <td></td>
-                       </tr>";
+                        <td colspan='3'><strong>Total</strong></td>
+                        <td><strong>" . calculerTotal($dbh) . "</strong></td>
+                        <td></td>
+                     </tr>";
 } else {
     $contenuPanier = "<tr><td colspan='5'>Votre panier est vide.</td></tr>";
 }
@@ -50,7 +54,7 @@ if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
 <div class="container">
     <?php if (isset($_SESSION['erreur'])): ?>
         <p class="alert alert-danger"><?php echo $_SESSION['erreur']; ?></p>
-        <?php unset($_SESSION['erreur']);?>
+        <?php unset($_SESSION['erreur']); ?>
     <?php endif; ?>
     <h1 class="my-4">Votre Panier</h1>
     <table class="table">
