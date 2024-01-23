@@ -1,11 +1,23 @@
 <?php
-// Inclusion du fichier de connexion à la base de données
 global $dbh;
 session_start();
-include('connect.php');
+include('connect.php');  // Assure une connexion à la base de données
 
-// Fonction pour ajouter un produit au panier d'un utilisateur connecté
+// Fonction pour vérifier la quantité de stock disponible
+function verifierQuantiteStock($dbh, $product_id, $quantiteDemandee) {
+    $stmt = $dbh->prepare("SELECT quantite_stock FROM produits WHERE id = :product_id");
+    $stmt->execute([':product_id' => $product_id]);
+    $produit = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $produit && $produit['quantite_stock'] >= $quantiteDemandee;
+}
+
+// Fonction pour ajouter ou mettre à jour un produit dans le panier d'un utilisateur connecté
 function ajouterProduitAuPanierUtilisateur($dbh, $utilisateur_id, $product_id, $quantite) {
+    if (!verifierQuantiteStock($dbh, $product_id, $quantite)) {
+        $_SESSION['erreur'] = "La quantité demandée pour le produit dépasse le stock disponible.";
+        return;
+    }
     // Vérification si l'utilisateur a déjà un panier
     $requetePanier = $dbh->prepare('SELECT id FROM paniers WHERE utilisateur_id = :utilisateur_id');
     $requetePanier->execute([':utilisateur_id' => $utilisateur_id]);
@@ -40,28 +52,53 @@ function ajouterProduitAuPanierUtilisateur($dbh, $utilisateur_id, $product_id, $
 // Fonction pour ajouter un produit au panier d'un utilisateur non connecté
 function ajouterProduitAuPanierSession($product_id, $quantite) {
     global $dbh;
+
+    if (!verifierQuantiteStock($dbh, $product_id, $quantite)) {
+        $_SESSION['erreur'] = "La quantité demandée pour le produit dépasse le stock disponible.";
+        return;
+    }
+
     if (!isset($_SESSION['panier'])) {
         $_SESSION['panier'] = array();
     }
 
-    // Récupération des informations sur le produit depuis la base de données
-    $stmt = $dbh->prepare("SELECT nom, prix FROM produits WHERE id = :product_id");
-    $stmt->execute([':product_id' => $product_id]);
-    $produit = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($produit) {
-        // Si le produit est déjà dans le panier de session, on met à jour la quantité
-        if (isset($_SESSION['panier'][$product_id])) {
-            $_SESSION['panier'][$product_id]['quantite'] += $quantite;
-        } else {
-            // Sinon, on ajoute le produit au panier de session
-            $_SESSION['panier'][$product_id] = array(
-                'nom' => $produit['nom'],
-                'prix' => $produit['prix'],
-                'quantite' => $quantite
-            );
-        }
+    // Si le produit est déjà dans le panier de session, on met à jour la quantité
+    if (isset($_SESSION['panier'][$product_id])) {
+        $_SESSION['panier'][$product_id]['quantite'] += $quantite;
+    } else {
+        // Sinon, on ajoute le produit au panier de session
+        $_SESSION['panier'][$product_id] = $quantite;
     }
+}
+
+// Fonction pour transférer le panier de session vers le panier utilisateur après la connexion
+function transfererPanierSessionVersUtilisateur($dbh, $utilisateur_id) {
+    if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {
+        foreach ($_SESSION['panier'] as $product_id => $quantite) {
+            ajouterProduitAuPanierUtilisateur($dbh, $utilisateur_id, $product_id, $quantite);
+        }
+        unset($_SESSION['panier']);  // Vider le panier de session après le transfert
+    }
+}
+
+function retirerProduitDuPanierUtilisateur($dbh, $utilisateur_id, $product_id) {
+    $requetePanier = $dbh->prepare('SELECT id FROM paniers WHERE utilisateur_id = :utilisateur_id');
+    $requetePanier->execute([':utilisateur_id' => $utilisateur_id]);
+    $panier = $requetePanier->fetch(PDO::FETCH_ASSOC);
+
+    if ($panier) {
+        $panier_id = $panier['id'];
+        $supprimerProduit = $dbh->prepare('DELETE FROM paniers_produits WHERE panier_id = :panier_id AND produit_id = :produit_id');
+        $supprimerProduit->execute([':panier_id' => $panier_id, ':produit_id' => $product_id]);
+    }
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'remove' && isset($_GET['id'])) {
+    $product_id = $_GET['id'];
+    if (isset($_SESSION['utilisateur_id'])) {
+        retirerProduitDuPanierUtilisateur($dbh, $_SESSION['utilisateur_id'], $product_id);
+    }
+    unset($_SESSION['panier'][$product_id]);
 }
 
 if (isset($_POST['product_id']) && isset($_POST['quantite'])) {
@@ -69,18 +106,20 @@ if (isset($_POST['product_id']) && isset($_POST['quantite'])) {
     $quantite = intval($_POST['quantite']);
 
     if (isset($_SESSION['utilisateur_id'])) {
-        // Utilisateur connecté, on ajoute le produit à son panier
-        $utilisateur_id = $_SESSION['utilisateur_id'];
-        ajouterProduitAuPanierUtilisateur($dbh, $utilisateur_id, $product_id, $quantite);
+        // L'utilisateur est connecté, mise à jour du panier dans la base de données
+        ajouterProduitAuPanierUtilisateur($dbh, $_SESSION['utilisateur_id'], $product_id, $quantite);
     } else {
-        // Utilisateur non connecté, on ajoute le produit au panier de session
+        // L'utilisateur n'est pas connecté, mise à jour du panier de session
         ajouterProduitAuPanierSession($product_id, $quantite);
     }
 
-    // Redirection vers la page du panier
     header('Location: panier.php');
     exit;
 } else {
     echo "Données du produit manquantes.";
+}
+
+if (isset($_SESSION['utilisateur_id'])) {
+    transfererPanierSessionVersUtilisateur($dbh, $_SESSION['utilisateur_id']);
 }
 ?>

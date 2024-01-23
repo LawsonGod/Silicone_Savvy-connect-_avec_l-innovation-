@@ -16,7 +16,7 @@ echo '<!DOCTYPE html>
     <link href="./styles/silicone-savvy.css" rel="stylesheet" type="text/css">
     <meta name="description" content="Silicone Savvy, site e-commerce de matériel informatique">
     <meta name="keywords" content="Silicone, Savvy, matériel, informatique, pc, écran, tablette, smartphone">
-    <link rel="icon" href="/assets/SiliconeSavvy80.png" type="Logo/jpg">
+    <link rel="icon" href="assets/SiliconeSavvy80.png"Logo/jpg">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -32,6 +32,7 @@ echo '<!DOCTYPE html>
             });
         });
     </script>
+    
 </head>
 <body>
 <header class="bg-dark text-white py-4">
@@ -118,5 +119,6 @@ echo '</ul>
         </div>
     </div>
 </nav>
+<main>
 ';
 ?>
