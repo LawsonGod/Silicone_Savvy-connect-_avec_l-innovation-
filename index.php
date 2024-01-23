@@ -166,20 +166,17 @@ try {
 $dbh = null;
 ?>
 <?php include('head_header_nav.php');?>
-
-<div id="#myCarousel" class="carousel slide " data-bs-ride="carousel">
+<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <ol class="carousel-indicators">
-        <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 4"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 5"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 5"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 6"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="2"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="3"></li>
+        <li data-bs-target="#myCarousel" data-bs-slide-to="4"></li>
     </ol>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="./assets/Image_Silicone_Savyy/Carousel 7.png" class="d-block w-100"  alt="Image 1">
+            <img src="./assets/Image_Silicone_Savyy/Carousel 7.png" class="d-block w-100" alt="Image 1">
         </div>
         <div class="carousel-item">
             <img src="./assets/Image_Silicone_Savyy/Carousel1.png" class="d-block w-100" alt="Image 2">
@@ -188,22 +185,19 @@ $dbh = null;
             <img src="./assets/Image_Silicone_Savyy/Carousel2.png" class="d-block w-100" alt="Image 3">
         </div>
         <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel3.png" class="d-block w-100" alt="Image 4">
+            <img src="./assets/Image_Silicone_Savyy/Carousel4.png" class="d-block w-100" alt="Image 4">
         </div>
         <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel4.png" class="d-block w-100" alt="Image 5">
-        </div>
-        <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel5.png" class="d-block w-100" alt="Image 6">
+            <img src="./assets/Image_Silicone_Savyy/Carousel5.png" class="d-block w-100" alt="Image 5">
         </div>
     </div>
-    <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+    <a class="carousel-control-prev" href="#myCarousel" role="button" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Précédent</span>
+        <span class="visually-hidden">Précédent</span>
     </a>
-    <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+    <a class="carousel-control-next" href="#myCarousel" role="button" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Suivant</span>
+        <span class="visually-hidden">Suivant</span>
     </a>
 </div>
 
@@ -285,7 +279,4 @@ $dbh = null;
         interval: 500;
     });
 </script>
-
-</body>
 <?php include('footer.php');?>
-</html>
