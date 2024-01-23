@@ -60,8 +60,7 @@ function editerProduit($dbh, $id, $nom, $categorie_id, $marque_id, $prix, $quant
 
 // Fonction pour récupérer les détails du produit à éditer
 function recupererDetailsProduit($dbh, $id) {
-//    $sql = "SELECT * FROM produits WHERE id = ?";
-    $sql = "SELECT * FROM produits, promotions WHERE produits.id = ? AND produits.id = promotions.produit_id";
+    $sql = "SELECT * FROM produits WHERE id = ?";
     $stmt = $dbh->prepare($sql);
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -88,9 +87,24 @@ function gererPromotion($dbh, $id_produit, $pourcentage_remise, $date_debut_prom
     }
 }
 
-// Fonction pour afficher un message d'erreur
-function afficherMessageErreur($message) {
-    echo '<div class="alert alert-danger">' . htmlspecialchars($message) . '</div>';
+// Fonction pour convertir le format de date du formulaire au format de la base de données
+function convertirFormatDateInverse($date) {
+    $elementsDate = explode('/', $date);
+
+    if (count($elementsDate) !== 3) {
+        return false;
+    }
+
+    $nouveauFormat = $elementsDate[2] . '-' . $elementsDate[1] . '-' . $elementsDate[0] . ' 00:00:00';
+
+    return $nouveauFormat;
+}
+
+// Fonction pour convertir le format de date de la base de données au format du formulaire
+function convertirFormatDate($date) {
+    $timestamp = strtotime($date);
+    $nouveauFormat = date('d/m/Y', $timestamp);
+    return $nouveauFormat;
 }
 
 // Récupérer les détails du produit à éditer (si l'ID est défini)
@@ -108,11 +122,11 @@ if (isset($_POST["edit_product_id"])) {
     // Si des informations de promotion sont trouvées, les attribuer aux variables correspondantes
     if ($promotion) {
         $pourcentage_remise = $promotion['pourcentage_remise'];
-        $date_debut_promo = $promotion['date_debut'];
-        $date_fin_promo = $promotion['date_fin'];
+        $date_debut_promo = convertirFormatDate($promotion['date_debut']); // Conversion de la date au format du formulaire
+        $date_fin_promo = convertirFormatDate($promotion['date_fin']); // Conversion de la date au format du formulaire
     }
 }
-var_dump($details_produit);
+
 // Récupérer les valeurs des champs pour le produit
 $nom = isset($_POST["nom"]) ? $_POST["nom"] : (isset($details_produit['nom']) ? $details_produit['nom'] : '');
 $categorie_id = isset($_POST["categorie_id"]) ? $_POST["categorie_id"] : (isset($details_produit['categorie_id']) ? $details_produit['categorie_id'] : '');
@@ -122,9 +136,9 @@ $quantite_stock = isset($_POST["quantite_stock"]) ? $_POST["quantite_stock"] : (
 $description = isset($_POST["description"]) ? $_POST["description"] : (isset($details_produit['description']) ? $details_produit['description'] : '');
 
 // Récupérer les valeurs des champs pour la promotion
-$pourcentage_remise = isset($_POST["pourcentage_remise"]) ? $_POST["pourcentage_remise"] : (isset($details_produit['pourcentage_remise']) ? $details_produit['pourcentage_remise'] : '');
-$date_debut_promo = isset($_POST["date_debut"]) ? $_POST["date_debut"] : (isset($details_produit['date_debut']) ? $details_produit['date_debut'] : '');
-$date_fin_promo = isset($_POST["date_fin"]) ? $_POST["date_fin"] : (isset($details_produit['date_fin']) ? $details_produit['date_fin'] : '');
+$pourcentage_remise = isset($_POST["pourcentage_remise"]) ? $_POST["pourcentage_remise"] : (isset($promotion['pourcentage_remise']) ? $promotion['pourcentage_remise'] : '');
+$date_debut_promo = isset($_POST["date_debut"]) ? $_POST["date_debut"] : (isset($promotion['date_debut']) ? $promotion['date_debut'] : '');
+$date_fin_promo = isset($_POST["date_fin"]) ? $_POST["date_fin"] : (isset($promotion['date_fin']) ? $promotion['date_fin'] : '');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["editer_produit"])) {
     if (!validerNomProduit($nom)) {
@@ -139,7 +153,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["editer_produit"])) {
         // Gérer la promotion (ajout ou mise à jour)
         if (!empty($pourcentage_remise) && !empty($date_debut_promo) && !empty($date_fin_promo)) {
             if (validerPourcentageRemise($pourcentage_remise)) {
-                gererPromotion($dbh, $id_produit_a_editer, $pourcentage_remise, $date_debut_promo, $date_fin_promo);
+                // Convertir les dates au format de la base de données
+                $date_debut_promo_db = convertirFormatDateInverse($date_debut_promo);
+                $date_fin_promo_db = convertirFormatDateInverse($date_fin_promo);
+                gererPromotion($dbh, $id_produit_a_editer, $pourcentage_remise, $date_debut_promo_db, $date_fin_promo_db);
             } else {
                 $message .= " La promotion n'a pas été ajoutée car le pourcentage de remise doit être entre 5 et 60.";
             }
@@ -159,13 +176,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["editer_produit"])) {
 //var_dump($date_debut_promo);
 //var_dump($date_fin_promo);
 //?>
-<div class="container">
-    <h1>Éditer un Produit</h1>
-    <?php if ($message !== '') : ?>
-        <?php afficherMessageErreur($message); ?>
-    <?php endif; ?>
+    <div class="container">
+        <h1>Éditer un Produit</h1>
+        <?php if ($message !== '') : ?>
+            <div class="alert alert-danger"><?php echo $message; ?></div>
+        <?php endif; ?>
     <form action="editer_produit.php" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="edit_product_id" value="<?php echo $details_produit['id']; ?>">
+        <input type="hidden" name="edit_product_id" value="<?php echo $id_produit_a_editer; ?>"> <!-- Correction de la clé ici -->
         <div class="form-group">
             <label for="nom">Nom du Produit</label>
             <input type="text" name="nom" class="form-control" value="<?php echo isset($nom) ? htmlspecialchars($nom) : (isset($details_produit['nom']) ? htmlspecialchars($details_produit['nom']) : ''); ?>" required>
@@ -199,19 +216,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["editer_produit"])) {
             <textarea name="description" class="form-control" required><?php echo isset($description) ? htmlspecialchars($description) : (isset($details_produit['description']) ? htmlspecialchars($details_produit['description']) : ''); ?></textarea>
         </div>
         <div class="form-group">
-            <label for="pourcentage_remise">Pourcentage de Remise:</label>
-            <input type="text" id="pourcentage_remise" name="pourcentage_remise" class="form-control" value="<?php echo htmlspecialchars($pourcentage_remise); ?>">
+            <label for="en_promotion">En promotion ?</label>
+            <input type="checkbox" name="en_promotion" id="en_promotion" <?php if(isset($promotion)) echo 'checked'; ?> onchange="afficherMasquerChampPromotion()">
         </div>
-        <div class="form-group">
-            <label for="date_debut">Date de Début de la Promotion:</label>
-            <input type="date" id="date_debut" name="date_debut" class="form-control" value="<?php echo htmlspecialchars($date_debut_promo); ?>">
+        <div class="form-group" id="champ_remise" style="display:<?php if(isset($promotion)) echo 'block'; else echo 'none'; ?>">
+            <label for="pourcentage_remise">Pourcentage de Remise</label>
+            <input type="number" name="pourcentage_remise" class="form-control" min="5" max="60" value="<?php echo htmlspecialchars($pourcentage_remise); ?>">
         </div>
-        <div class="form-group">
-            <label for="date_fin">Date de Fin de la Promotion:</label>
-            <input type="date" id="date_fin" name="date_fin" class="form-control" value="<?php echo htmlspecialchars($date_fin_promo); ?>">
+        <div class="form-group" id="champ_promotion" style="display:<?php if(isset($promotion)) echo 'block'; else echo 'none'; ?>">
+            <label for="date_debut">Date de Début de la Promotion</label>
+            <input type="date" id="date_debut" name="date_debut" class="form-control" pattern="\d{2}/\d{2}/\d{4}" value="<?php echo isset($date_debut_promo) ? htmlspecialchars($date_debut_promo) : ''; ?>">
+        </div>
+        <div class="form-group" id="champ_fin_promotion" style="display:<?php if(isset($promotion)) echo 'block'; else echo 'none'; ?>">
+            <label for="date_fin">Date de Fin de la Promotion</label>
+            <input type="date" id="date_fin" name="date_fin" class="form-control" pattern="\d{2}/\d{2}/\d{4}" value="<?php echo isset($date_fin_promo) ? htmlspecialchars($date_fin_promo) : ''; ?>">
         </div>
         <button type="submit" name="editer_produit" class="btn btn-primary">Mettre à jour</button>
         <a href="admin.php" class="btn btn-secondary">Annuler</a>
     </form>
 </div>
+<script>
+    // Fonction pour afficher ou masquer les champs de promotion en fonction de l'état de la case à cocher
+    function afficherMasquerChampPromotion() {
+        const casePromotion = document.getElementById('en_promotion');
+        const champPromotion = document.getElementById('champ_promotion');
+        const champFinPromotion = document.getElementById('champ_fin_promotion');
+        const champRemise = document.getElementById('champ_remise');
+
+        if (casePromotion.checked) {
+            champPromotion.style.display = 'block';
+            champFinPromotion.style.display = 'block';
+            champRemise.style.display = 'block';
+        } else {
+            champPromotion.style.display = 'none';
+            champFinPromotion.style.display = 'none';
+            champRemise.style.display = 'none';
+        }
+    }
+
+    // Appeler la fonction au chargement de la page pour gérer l'affichage initial
+    window.onload = afficherMasquerChampPromotion;
+</script>
 <?php include('footer.php'); ?>
