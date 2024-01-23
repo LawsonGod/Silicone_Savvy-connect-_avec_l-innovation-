@@ -80,7 +80,7 @@ if ($client_id) {
         </tbody>
     </table>
     <!-- Boutons pour éditer les informations du compte -->
-    <button class="btn btn-primary">Éditer les informations</button>
+    <a href="editer_client.php" class="btn btn-primary">Éditer les informations</a>
 
     <!-- Bouton pour supprimer le compte -->
     <a href="supprimer_client.php" class="btn btn-danger">Supprimer le compte</a>
