@@ -51,68 +51,42 @@ CREATE TABLE clients (
     mot_de_passe VARCHAR(255) NOT NULL
 ) ENGINE InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- MDP toto
 INSERT INTO clients (nom, alias, email, adresse, ville, code_postal, telephone, date_enregistrement, mot_de_passe) VALUES
-('Client1','alias1', 'client1@exemple.fr', 'adresse1', 'ville1', '01000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$FehN3MUZFW1DXSpc.M1x4.YHYMKN9DWLhe5xtVLaZCYibl1oSM36S'),
-('Client2', 'alias2','client2@exemple.fr', 'adresse2', 'ville2', '02000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$MzHgERJ1SW9BJVKZuny0JuYcVMDZRqAvcSLEhXkp71PuZi0V8bobC'),
-('Client3', 'alias3','client3@exemple.fr', 'adresse3', 'ville3', '03000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$xs3aa8x2qgDYlpwB9PKKy.tjLBEmciIRmcGEtIqQJ44NmF3Dza8ki'),
-('Client4','alias4', 'client4@exemple.fr', 'adresse4', 'ville4', '04000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$gOng5C5ArEeY/X6ZW1HMGucAWLyXwgGxx7eD71UHto0.Q8MafU5zu'),
-('Client5','alias5', 'client5@exemple.fr', 'adresse5', 'ville5', '05000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$fzeYqtadmWVwoQWp0FokCeqpS0fWzv0eW/i/JW3QYkc8T3unryZCG'),
-('Client6','alias6', 'client6@exemple.fr', 'adresse6', 'ville6', '06000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$2TldTjsEEJ.hACjBC8iPIuNVHK99n2Tm.dsBu6CbfUpE/3h0rJjuO'),
-('Client7','alias7', 'client7@exemple.fr', 'adresse7', 'ville7', '07000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$2HETQezoWCWexeKnT7Izy.qvuXmmwTKfHawOAcxZnLoEJsGvJKK9m'),
-('Client8','alias8','client8@exemple.fr', 'adresse8', 'ville8', '08000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$DWQajc5LwYa7Pj9oaYdTLOmW0PAR/zBGdA1YAykKH9CNZZqiH4gnC'),
-('Client9','alias9', 'client9@exemple.fr', 'adresse9', 'ville9', '09000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$a1SYBHvvbYofQkvMm1Iit.Kt.05zm1GQp3h0TcHpHmJfaAVI1LNhK'),
-('Client10','alias10', 'client10@exemple.fr', 'adresse10', 'ville10', '10000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$vT2EqN56LALP28fNLzzpH.TAPF0EhFO6G4NZx18i5/dsiry3e5xzC'),
-('Client11','alias11', 'client11@exemple.fr', 'adresse11', 'ville11', '11000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$JHjgN0f/WlKv5SzS0ywU4.IxGN5vFVVGtTT9F446QJ3.NGv.S59Sa'),
-('Client12','alias12', 'client12@exemple.fr', 'adresse12', 'ville12', '12000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$fPejaw.pL/4EFkO1/axIMu76nlIW1miqB8jd4suDNyYEtcrRz/zTC'),
-('Client13','alias13', 'client13@exemple.fr', 'adresse13', 'ville13', '13000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$IkpDzYFv5gGyO3IbIZSFhOlQLrrxe3TlyEZ.w2sLixL1d4AFCbgLq'),
-('Client14','alias14', 'client14@exemple.fr', 'adresse14', 'ville14', '14000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$FGaAMSJyuIvyLsAlVniJb.QCjHeGS6xZHdms6ZQGxC5scl2i./ici'),
-('Client15','alias15', 'client15@exemple.fr', 'adresse15', 'ville15', '15000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$8JEL5v1Czm6U8J1CkCXDzeD9RCbuJIgqjp9Mj9Hh3Z1.pRHbeKRoC'),
-('Client16','alias16', 'client16@exemple.fr', 'adresse16', 'ville16', '16000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$IHBYDAiXNmh2S86iQFTvr.JXKRKRwFFFWcPo03nJBzs0MJIk/y.DS'),
-('Client17','alias17', 'client17@exemple.fr', 'adresse17', 'ville17', '17000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$8DW6asQtvc5.WZQkOuUGrubtwPWktNOFS0MDVARao01qvseby12..'),
-('Client18','alias18', 'client18@exemple.fr', 'adresse18', 'ville18', '18000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$3cUYvdDEujl6dZCyDGKEieWGfzdtslrkp04K3ogk74fXpmYNzCkye'),
-('Client19','alias19', 'client19@exemple.fr', 'adresse19', 'ville19', '19000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$ewOGdIui764xB2bMuVgN5eO5vQK/kmc4qSA..UpkH2yiUbzr4UBxm'),
-('Client20','alias20', 'client20@exemple.fr', 'adresse20', 'ville20', '20000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$msbY1zMfF6.eT/nQoV4SXelyBa/YN2tofD2mfgpBTfQ9Ar/2hUuZq'),
-('Client21', 'alias21','client21@exemple.fr', 'adresse21', 'ville21', '21000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$Xqq9pe2F/3PaOsJWZQA.VOqi0h.QtjIWTWxOgkB0bGQS3prsYsSo2'),
-('Client22', 'alias22','client22@exemple.fr', 'adresse22', 'ville22', '22000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$UTizL3E5CWesGLRPHqqL2.48ZU6/WT87P8/YrS5auzLQngHBczEOm'),
-('Client23','alias23', 'client23@exemple.fr', 'adresse23', 'ville23', '23000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$CZ/RxQrxwF.rLOAdu7UsnOrOMtzFLzpt3cYmSfIac9nYq29NOG5EC'),
-('Client24','alias24', 'client24@exemple.fr', 'adresse24', 'ville24', '24000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$dgHffOx94U3qlGKSJocqrejsVQPa9md9wAXjN..bk2LiwIh3X3H32'),
-('Client25','alias25', 'client25@exemple.fr', 'adresse25', 'ville25', '25000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$Me/SKtKMfaTx1Z1xskZSQezFGD14w.eFFnLxwJ.GeA99ZaYewbaSe'),
-('Client26', 'alias26','client26@exemple.fr', 'adresse26', 'ville26', '26000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$RinKnrci6bcgsTBW6ncRP.eM8q5HeR5AutJvmWo/uk9lQLmhLt.8m'),
-('Client27','alias27', 'client27@exemple.fr', 'adresse27', 'ville27', '27000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$9pnJPJXjMxGf8REpku6lneCT9Bg2mAQnPYkkNAwGWFr1G8Ffg0RDy'),
-('Client28','alias28', 'client28@exemple.fr', 'adresse28', 'ville28', '28000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$YZ48ZNQvzWo4iUWGDeGAe.C9sEKXYRd2qcgPdd5fC9mAcx5OAhgCu'),
-('Client29','alias29', 'client29@exemple.fr', 'adresse29', 'ville28', '29000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$T.ZAyjSMnLHhqV5PvVAube8Gk.e5KncDA0myaqL73OejgGyLFRkFG'),
-('Client30','alias30', 'client30@exemple.fr', 'adresse30', 'ville29', '30000', '0606060606',
-  DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY),'$2y$10$57ygbmeivLAs.2MpluEuDeWaXYs4aY4GX/g4lSIlnT2J7zJU6eTti');
-
+('Brad Pitt', 'Indiana Jones', 'bradpitt@example.fr', '123 Main Street', 'Los Angeles', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Leonardo DiCaprio', 'James Bond', 'leonardodicaprio@example.fr', '456 Elm Avenue', 'New York', '10001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Angelina Jolie', 'Hulk', 'angelinajolie@example.fr', '789 Oak Street', 'Chicago', '20001', '0606060606', DATE_ADD('2018-01-01', INTERVAL
+                                                                                                                 FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Tom Cruise', 'Superman', 'tomcruise@example.fr', '1010 Maple Lane', 'San Francisco', '30001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Jennifer Aniston', 'Harry Potter', 'jenniferaniston@example.fr', '2020 Cedar Road', 'Miami', '40001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('George Clooney', 'Spider-Man', 'georgeclooney@example.fr', '3030 Pine Street', 'Dallas', '50001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Scarlett Johansson', 'Luke Skywalker', 'scarlettjohansson@example.fr', '4040 Birch Avenue', 'Seattle', '60001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Matt Damon', 'Captain America', 'mattdamon@example.fr', '5050 Willow Drive', 'Denver', '70001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Natalie Portman', 'Black Widow', 'natalieportman@example.fr', '6060 Oakwood Circle', 'Phoenix', '80001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Johnny Depp', 'Jack Sparrow', 'johnnydepp@example.fr', '7070 Elmwood Lane', 'Houston', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Cate Blanchett', 'Galadriel', 'cateblanchett@example.fr', '8080 Cedar Avenue', 'Atlanta', '10001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('', 'Iron Man', 'bradleycooper@example.fr', '9090 Maple Road', 'Chicago', '20001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR
+(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Emma Stone', 'Hermione Granger', 'emmastone@example.fr', '10101 Oak Avenue', 'San Francisco', '30001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Denzel Washington', 'John Wick', 'denzelwashington@example.fr', '20202 Elm Street', 'Miami', '40001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Julia Roberts', 'Aquaman', 'juliaroberts@example.fr', '30303 Pine Lane', 'Dallas', '50001', '0606060606', DATE_ADD('2018-01-01', INTERVAL
+                                                                                                               FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Morgan Freeman', 'Gandalf', 'morganfreeman@example.fr', '40404 Cedar Circle', 'Seattle', '60001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Nicole Kidman', 'Wonder Woman', 'nicolekidman@example.fr', '50505 Willow Road', 'Denver', '70001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Harrison Ford', 'Han Solo', 'harrisonford@example.fr', '60606 Oak Circle', 'Phoenix', '80001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Kate Winslet', 'Rose Dawson', 'katewinslet@example.fr', '70707 Elmwood Drive', 'Houston', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Eddie Redmayne', 'Newt Scamander', 'eddieredmayne@example.fr', '80808 Cedar Lane', 'Atlanta', '10001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Tom Hanks', 'Forrest Gump', 'tomhanks@example.fr', '123 Main Street', 'Los Angeles', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Meryl Streep', 'Miranda Priestly', 'merylstreep@example.fr', '456 Elm Avenue', 'New York', '10001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Robert Downey Jr.', 'Tony Stark', 'robertdowney@example.fr', '789 Oak Street', 'Chicago', '20001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Jennifer Lawrence', 'Katniss Everdeen', 'jenniferlawrence@example.fr', '3030 Pine Street', 'Dallas', '50001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Chris Hemsworth', 'Thor', 'chrishemsworth@example.fr', '4040 Birch Avenue', 'Seattle', '60001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Emma Watson', 'Asterix', 'emmawatson@example.fr', '5050 Willow Drive', 'Denver', '70001', '0606060606', DATE_ADD('2018-01-01', INTERVAL
+                                                                                                                 FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Margot Robbie', 'Rocket Raccoon', 'margotrobbie@example.fr', '6060 Oakwood Circle', 'Phoenix', '80001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Gal Gadot', 'Batman', 'galgadot@example.fr', '7070 Elmwood Lane', 'Houston', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Tom Hardy', 'Mad Max', 'tomhardy@example.fr', '111 River Road', 'Houston', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu'),
+('Emily Blunt', 'Mary Poppins', 'emilyblunt@example.fr', '222 Lake Street', 'Los Angeles', '90001', '0606060606', DATE_ADD('2018-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2024-01-16', '2018-01-01')) DAY), '$2y$10$jWnKVghuU1TkzSEXbSgK.epMiBhXtz0ZLudw..qObPBCh3CS4XdWu');
 
 
 CREATE TABLE produits (
@@ -469,9 +443,12 @@ CREATE TABLE administrateurs (
     derniere_connexion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- MDP godwill et robin
 INSERT INTO administrateurs (nom, email, mot_de_passe, role, derniere_connexion) VALUES
-('Administrateur1', 'administrateur1@exemple.fr', '$2y$10$vXTXTV7Cx4FfuzwLuITCQul0wCtBGUluqdD2iiKwlSVtMVb7Tot0a', 'Administrateur principal', '2017-12-28'),
-('Administrateur2', 'administrateur2@exemple.fr', '$2y$10$/L9yuD35pYAmdYcoiqArce5qm1Cwh9EzR/KWz6fPpWVfSgmmX/eCO', 'Administrateur secondaire', '2017-12-28');
+('Godwill', 'godwill@exemple.fr', '$2y$10$aDbmZUEd4rulveQwWEKkkuUwLO1eKAoFh9sHKPKnDTHGJTNxTgo2m', 'Administrateur principal',
+ '2017-12-28'),
+('Robin', 'robin@exemple.fr', '$2y$10$t/7D9oDcFmoPAKyhFfCyE.gJWZ/hINmHHw/n67ZvEZbxPiFJBOiku', 'Administrateur secondaire',
+ '2017-12-28');
 
 
 -- Liste des produits

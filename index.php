@@ -141,7 +141,7 @@ try {
 
             $message .= '<div class="product">';
             $message .= "<a href='produit.php?id=$product_id'>";
-            $message .= "<img src='$image' alt='$nom'>";
+            $message .= "<img src='$image' alt='$nom' class='product-image card-img-top'>";
             $message .= "<h3>$nom</h3>";
 
             if ($pourcentage_remise > 0) {
