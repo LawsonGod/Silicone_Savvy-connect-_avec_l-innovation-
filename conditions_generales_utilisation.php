@@ -4,9 +4,6 @@ session_start();
 include('connect.php');
 ?>
 <?php include('head_header_nav.php');?>
-<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuBurger" aria-controls="menuBurger" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-</button>
 <div class="container">
     <h1>CONDITIONS GÉNÉRALES D'UTILISATION</h1>
     <div id="accordion">
