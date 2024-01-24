@@ -174,12 +174,12 @@ $dbh = null;
         <li data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></li>
         <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 4"></li>
         <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 5"></li>
-        <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 5"></li>
         <li data-bs-target="#myCarousel" data-bs-slide-to="3" aria-label="Slide 6"></li>
+
     </ol>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="./assets/Image_Silicone_Savyy/Carousel 7.png" class="d-block w-100"  alt="Image 1">
+            <img src="./assets/Image_Silicone_Savyy/Carousel7.png" class="d-block w-100"  alt="Image 1">
         </div>
         <div class="carousel-item">
             <img src="./assets/Image_Silicone_Savyy/Carousel1.png" class="d-block w-100" alt="Image 2">
@@ -207,6 +207,8 @@ $dbh = null;
     </a>
 </div>
 
+<br>
+<br>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
@@ -240,7 +242,7 @@ $dbh = null;
                     <select id="filtreNote" name="filtreNote" class="form-select">
                         <option value="">Filtrer par Note</option>
                         <option value="positives">Positives (> 3)</option>
-                        <option value="negatives">Négatives (< 3)</option>
+                        <option value="negatives">Négatives (&lt; 3)</option>
                     </select>
                 </div>
 
@@ -286,6 +288,4 @@ $dbh = null;
     });
 </script>
 
-</body>
 <?php include('footer.php');?>
-</html>
