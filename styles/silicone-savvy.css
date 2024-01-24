@@ -144,7 +144,7 @@ a:hover {
 
 /* Style du carousel */
 .carousel-inner img {
-    height: 600px;
+    height: 700px;
     width: auto;
     object-fit: cover;
     margin-left: auto;
