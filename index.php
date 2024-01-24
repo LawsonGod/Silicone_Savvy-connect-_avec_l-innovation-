@@ -166,6 +166,8 @@ try {
 $dbh = null;
 ?>
 <?php include('head_header_nav.php');?>
+    <br>
+    <br>
 <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <ol class="carousel-indicators">
         <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></li>
@@ -277,7 +279,7 @@ $dbh = null;
 <script>
     $(document).ready(function(){
         $('#myCarousel').carousel();
-        interval: 500;
+        interval: 1000;
     });
 </script>
 <?php include('footer.php');?>
