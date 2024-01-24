@@ -176,19 +176,19 @@ $dbh = null;
     </ol>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="./assets/Image_Silicone_Savyy/Carousel7.png" class="d-block w-100" alt="Image 1">
+            <img src="./assets/Image_Silicone_Savyy/Carousel1.png" alt="Image 1">
         </div>
         <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel1.png" class="d-block w-100" alt="Image 2">
+            <img src="./assets/Image_Silicone_Savyy/Carousel2.png" alt="Image 2">
         </div>
         <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel2.png" class="d-block w-100" alt="Image 3">
+            <img src="./assets/Image_Silicone_Savyy/Carousel4.png" alt="Image 3">
         </div>
         <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel4.png" class="d-block w-100" alt="Image 4">
+            <img src="./assets/Image_Silicone_Savyy/Carousel5.png" alt="Image 4">
         </div>
         <div class="carousel-item">
-            <img src="./assets/Image_Silicone_Savyy/Carousel5.png" class="d-block w-100" alt="Image 5">
+            <img src="./assets/Image_Silicone_Savyy/Carousel6.png" alt="Image 5">
         </div>
     </div>
     <a class="carousel-control-prev" href="#myCarousel" role="button" data-bs-slide="prev">
@@ -200,7 +200,8 @@ $dbh = null;
         <span class="visually-hidden">Suivant</span>
     </a>
 </div>
-
+<br>
+<br>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
