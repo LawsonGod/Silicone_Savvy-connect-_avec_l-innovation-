@@ -143,34 +143,28 @@ a:hover {
 }
 
 /* Style du carousel */
-#myCarousel {
-    width: 70%; 
-    margin: 0 auto; 
+.carousel-inner .carousel-item img {
+    max-height: 100px;
+    width: auto;
+    object-fit: cover;
+    margin: auto;
 }
-
-.carousel-item img {
-    width: 100%; 
-    height: auto; 
+.carousel-inner img {
+    max-height: 100px; !important;
 }
-
+.carousel-item active{
+    max-height: 100px; !important;
+}
 .carousel-control-prev,
 .carousel-control-next {
     display: none;
 }
 
-/* .carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: #fff; 
-} */
-
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
     opacity: 0.8;
 }
-.carousel-inner {
-    max-height: 100vw;
-}
+
 .carousel-indicators {
     display: none;
 }
-

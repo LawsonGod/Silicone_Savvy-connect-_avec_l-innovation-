@@ -1,10 +1,11 @@
 <?php
-    $pseudo = 'root';
-    $password = '';
-    $dbh = new PDO ('mysql:host=localhost:3306;dbname=projetphp', $pseudo,$password);
+global $port, $pseudo, $password;
+include('fichier_de_configuration.php');
+
+    $dbh = new PDO ("mysql:host=localhost:$port;dbname=projetphp", $pseudo,$password);
 //    print_r($dbh);
 $dsn =
-    'mysql:host=localhost:3306;dbname=projetphp';
+    "mysql:host=localhost:$port;dbname=projetphp";
 
 try {
     $dbh =
@@ -16,4 +17,5 @@ try {
 } catch (PDOException $e) {
     echo "Erreur de connexion : " .
         $e->getMessage();
+    exit();
 }
