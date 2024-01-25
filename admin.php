@@ -2,12 +2,8 @@
 // Inclure le fichier de connexion
 global $dbh;
 include('connect.php');
+require_once ('./inc/outils.php');
 session_start();
-
-// Vérifier si l'utilisateur est un administrateur
-function estAdministrateur() {
-    return isset($_SESSION["user_type"]) && $_SESSION["user_type"] === "administrateur";
-}
 
 if (!estAdministrateur()) {
     header('Location: index.php');
@@ -20,107 +16,14 @@ $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
 
-// Vérifier si une valeur est cochée
-function estCochee($valeur, $tableauPost) {
-    return in_array($valeur, $tableauPost) ? 'checked' : '';
-}
-
-// Obtenir les catégories depuis la base de données
-function obtenirCategories($dbh) {
-    $stmt = $dbh->query('SELECT id, nom FROM categories');
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Obtenir les marques depuis la base de données
-function obtenirMarques($dbh) {
-    $stmt = $dbh->query('SELECT id, nom FROM marques');
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 $categories = obtenirCategories($dbh);
 $marques = obtenirMarques($dbh);
 
-// Construction de la requête SQL
-function construireRequeteSQL($parametres) {
-    $sql = "SELECT
-        p.id,  
-        p.nom AS NomProduit,
-        c.nom AS NomCategorie,
-        m.nom AS NomMarque,
-        p.prix AS Prix,
-        pr.pourcentage_remise AS PourcentageRemise,
-        CASE
-            WHEN pr.pourcentage_remise > 0 THEN (p.prix - (p.prix * pr.pourcentage_remise / 100))
-            ELSE p.prix
-        END AS PrixApresRemise,
-        p.quantite_stock AS QuantiteStock,
-        p.image AS Image  
-    FROM produits p
-    INNER JOIN categories c ON p.categorie_id = c.id
-    INNER JOIN marques m ON p.marque_id = m.id
-    LEFT JOIN promotions pr ON p.id = pr.produit_id";
-
-    $conditions = [];
-    $parametresRequete = [];
-
-    if (isset($parametres['motCle']) && !empty($parametres['motCle'])) {
-        $motCle = '%' . $parametres['motCle'] . '%';
-        $conditions[] = "p.nom LIKE ?";
-        $parametresRequete[] = $motCle;
-    }
-
-    if (!empty($parametres['filtreMarques'])) {
-        $marquesPlaceholder = implode(', ', array_fill(0, count($parametres['filtreMarques']), '?'));
-        $conditions[] = "p.marque_id IN ($marquesPlaceholder)";
-        $parametresRequete = array_merge($parametresRequete, $parametres['filtreMarques']);
-    }
-
-    if (!empty($parametres['filtreCategories'])) {
-        $categoriesPlaceholder = implode(', ', array_fill(0, count($parametres['filtreCategories']), '?'));
-        $conditions[] = "p.categorie_id IN ($categoriesPlaceholder)";
-        $parametresRequete = array_merge($parametresRequete, $parametres['filtreCategories']);
-    }
-
-    if (!empty($parametres['tranchePrix'])) {
-        $prixRange = explode('-', $parametres['tranchePrix']);
-        if (count($prixRange) == 2) {
-            $conditions[] = "p.prix >= ? AND p.prix <= ?";
-            $parametresRequete[] = $prixRange[0];
-            $parametresRequete[] = $prixRange[1];
-        } elseif ($parametres['tranchePrix'] == '1000') {
-            $conditions[] = "p.prix >= 1000";
-        }
-    }
-
-    if (!empty($conditions)) {
-        $sql .= ' WHERE ' . implode(' AND ', $conditions);
-    }
-
-    if (isset($parametres['tri'])) {
-        $orderBy = $parametres['tri'];
-        $sql .= $orderBy == 'asc' ? ' ORDER BY Prix ASC' : ' ORDER BY Prix DESC';
-    } else {
-        $sql .= ' ORDER BY p.id ASC';
-    }
-
-    return [
-        'sql' => $sql,
-        'parametres' => $parametresRequete
-    ];
-}
-
-// Obtenir les produits en fonction des paramètres de recherche
-function obtenirProduitsFiltres($dbh, $parametres) {
-    $donneesRequete = construireRequeteSQL($parametres);
-    $sql = $donneesRequete['sql'];
-    $parametresRequete = $donneesRequete['parametres'];
-
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute($parametresRequete);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 $produits = obtenirProduitsFiltres($dbh, $_POST);
+
+$stmt = $dbh->query("SELECT COUNT(*) AS TotalProducts FROM produits");
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$totalProduits = $row['TotalProducts'];
 ?>
 <script>
     // Fonction de confirmation de suppression d'un produit
@@ -166,6 +69,14 @@ $produits = obtenirProduitsFiltres($dbh, $_POST);
                         <option value="1000" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '1000') ? 'selected' : ''; ?>>Plus de 1000 €</option>
                     </select>
                 </div>
+                <div class="form-group mb-2">
+                    <label for="quantiteStock">Quantité en stock :</label>
+                    <select id="quantiteStock" name="quantiteStock" class="form-select">
+                        <option value="">Sélectionner</option>
+                        <option value="inf">Inférieur ou égal à 10</option>
+                        <option value="sup">Supérieur à 10</option>
+                    </select>
+                </div>
                 <h4>Catégories</h4>
                 <?php foreach ($categories as $categorie): ?>
                     <div class="form-check">
@@ -192,7 +103,11 @@ $produits = obtenirProduitsFiltres($dbh, $_POST);
         </div>
         <div class="col-md-8">
             <h1>Liste des Produits</h1>
-            <a href="./ajouter_produit.php" id="ajouter-produit-link" class="btn btn-primary">Ajouter un Produit</a>
+            <a href="./ajouter_produit.php" class="btn btn-primary">Ajouter un Produit</a>
+            <a href="./ajouter_categorie.php" class="btn btn-primary">Ajouter une Catégorie</a>
+            <a href="./ajouter_marque.php" class="btn btn-primary">Ajouter une Marque</a>
+            <a href="./liste_des_clients.php" class="btn btn-primary">Voir la Liste des Clients</a>
+            <a href="./liste_des_commandes.php" class="btn btn-primary">Voir la Liste des Commandes</a>
             <table class="table table-bordered">
                 <thead>
                 <tr>

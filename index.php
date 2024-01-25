@@ -4,6 +4,7 @@ global $dbh;
 session_start();
 
 include('connect.php');
+require_once ('./inc/outils.php');
 
 // Variables pour les filtres et l'ordre de tri
 $orderBy = '';

@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+include('connect.php');
+require_once ('./inc/outils.php');
 $message = "";
 
 if (isset($_SESSION['panier']) && !empty($_SESSION['panier'])) {

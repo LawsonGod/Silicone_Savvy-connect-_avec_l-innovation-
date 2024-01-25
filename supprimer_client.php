@@ -5,52 +5,7 @@ session_start();
 // Inclusion du fichier de connexion à la base de données
 global $dbh;
 include('connect.php');
-
-// Fonction pour supprimer les produits dans le panier du client
-function supprimerProduitsPanier($clientId, $dbh) {
-    $stmt = $dbh->prepare("DELETE pp FROM paniers_produits pp
-                           INNER JOIN paniers p ON pp.panier_id = p.id
-                           WHERE p.utilisateur_id = :client_id");
-    $stmt->bindParam(':client_id', $clientId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-// Fonction pour supprimer le panier du client
-function supprimerPanier($clientId, $dbh) {
-    $stmt = $dbh->prepare("DELETE FROM paniers WHERE utilisateur_id = :client_id");
-    $stmt->bindParam(':client_id', $clientId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-// Fonction pour supprimer les évaluations du client
-function supprimerEvaluations($clientId, $dbh) {
-    $stmt = $dbh->prepare("DELETE FROM evaluations WHERE utilisateur_id = :client_id");
-    $stmt->bindParam(':client_id', $clientId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-// Fonction pour supprimer les expéditions liées aux commandes du client
-function supprimerExpeditions($clientId, $dbh) {
-    $stmt = $dbh->prepare("DELETE e FROM expeditions e
-                           INNER JOIN commandes c ON e.commande_id = c.id
-                           WHERE c.client_id = :client_id");
-    $stmt->bindParam(':client_id', $clientId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-// Fonction pour supprimer les commandes du client
-function supprimerCommandes($clientId, $dbh) {
-    $stmt = $dbh->prepare("DELETE FROM commandes WHERE client_id = :client_id");
-    $stmt->bindParam(':client_id', $clientId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-// Fonction pour supprimer le client
-function supprimerClient($clientId, $dbh) {
-    $stmt = $dbh->prepare("DELETE FROM clients WHERE id = :client_id");
-    $stmt->bindParam(':client_id', $clientId, PDO::PARAM_INT);
-    $stmt->execute();
-}
+require_once ('./inc/outils.php');
 
 // Récupération de l'identifiant du client à partir de la session
 $client_id = isset($_SESSION['client_id']) ? $_SESSION['client_id'] : null;

@@ -3,22 +3,12 @@
 global $dbh;
 session_start();
 include('connect.php');
+require_once ('./inc/outils.php');
 
-// Récupération de l'identifiant du commentaire à modifier depuis la requête GET
 $commentaireId = isset($_GET['id']) ? $_GET['id'] : null;
-$commentaire = null;
 
-try {
-    // Récupération des informations du commentaire depuis la base de données
-    if ($commentaireId) {
-        $stmtCommentaire = $dbh->prepare("SELECT e.*, p.nom AS produit_nom, p.image AS produit_image FROM evaluations e JOIN produits p ON e.produit_id = p.id WHERE e.id = :id");
-        $stmtCommentaire->bindParam(':id', $commentaireId, PDO::PARAM_INT);
-        $stmtCommentaire->execute();
-        $commentaire = $stmtCommentaire->fetch(PDO::FETCH_ASSOC);
-    }
-} catch (PDOException $e) {
-    echo "Erreur de base de données : " . $e->getMessage();
-}
+// Récupération des informations du commentaire depuis la base de données
+$commentaire = getCommentaireInfo($dbh, $commentaireId);
 
 // Traitement du formulaire de modification du commentaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
@@ -26,16 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $nouveauCommentaire = $_POST['commentaire'];
     $nouvelleNote = $_POST['note'];
 
-    // Exécuter la requête de mise à jour du commentaire dans la base de données
-    $stmt = $dbh->prepare("UPDATE evaluations SET commentaire = :commentaire, note = :note WHERE id = :id");
-    $stmt->bindParam(':commentaire', $nouveauCommentaire, PDO::PARAM_STR);
-    $stmt->bindParam(':note', $nouvelleNote, PDO::PARAM_INT);
-    $stmt->bindParam(':id', $commentaireId, PDO::PARAM_INT);
-    $stmt->execute();
-
-    // Redirection après la modification vers la page de compte client
-    header('Location: compte_client.php');
-    exit();
+    // Appel de la fonction pour mettre à jour le commentaire
+    if (miseAJourDuCommentaire($dbh, $commentaireId, $nouveauCommentaire, $nouvelleNote)) {
+        // Redirection après la modification vers la page de compte client
+        header('Location: compte_client.php');
+        exit();
+    } else {
+        echo "Erreur lors de la mise à jour du commentaire.";
+    }
 }
 ?>
 <?php include('head_header_nav.php'); ?>

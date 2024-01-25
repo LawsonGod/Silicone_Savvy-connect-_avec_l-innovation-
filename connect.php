@@ -1,21 +1,22 @@
 <?php
+// Déclaration des variables globales pour les informations de connexion
 global $port, $pseudo, $password;
+
+// Inclusion du fichier de configuration contenant les informations de connexion
 include('fichier_de_configuration.php');
 
-    $dbh = new PDO ("mysql:host=localhost:$port;dbname=projetphp", $pseudo,$password);
-//    print_r($dbh);
-$dsn =
-    "mysql:host=localhost:$port;dbname=projetphp";
+// Création d'une instance PDO pour établir la connexion à la base de données
+$dsn = "mysql:host=localhost:$port;dbname=projetphp"; // Chaîne de connexion DSN
 
 try {
-    $dbh =
-        new PDO($dsn,
-            $pseudo,
-            $password);
-    $dbh->setAttribute(PDO::ATTR_ERRMODE,
-        PDO::ERRMODE_EXCEPTION);
+    // Création de l'objet PDO avec les informations de connexion
+    $dbh = new PDO($dsn, $pseudo, $password);
+
+    // Configuration des options de PDO pour gérer les erreurs
+    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "Erreur de connexion : " .
-        $e->getMessage();
-    exit();
+    // Gestion des exceptions en cas d'échec de la connexion
+    echo "Erreur de connexion : " . $e->getMessage();
+    exit(); // Arrêt du script en cas d'erreur
 }
+?>

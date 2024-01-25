@@ -3,18 +3,7 @@
 global $dbh;
 session_start();
 include('connect.php');
-
-// Fonction pour obtenir les informations d'un commentaire par son identifiant
-function obtenirCommentaireParId($dbh, $commentaireId) {
-    $stmtCommentaire = $dbh->prepare("SELECT e.*, p.nom AS produit_nom 
-    FROM evaluations e
-    JOIN produits p ON e.produit_id = p.id
-    WHERE e.id = :id");
-
-    $stmtCommentaire->bindParam(':id', $commentaireId, PDO::PARAM_INT);
-    $stmtCommentaire->execute();
-    return $stmtCommentaire->fetch(PDO::FETCH_ASSOC);
-}
+require_once ('./inc/outils.php');
 
 // Vérification de l'existence de l'identifiant du commentaire dans l'URL
 $commentaireId = isset($_GET['id']) ? $_GET['id'] : null;

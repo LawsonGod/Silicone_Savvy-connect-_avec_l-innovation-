@@ -2,6 +2,7 @@
 global $dbh;
 session_start();
 include('connect.php');
+require_once ('./inc/outils.php');
 ?>
 <?php include('head_header_nav.php'); ?>
 <div class="container-fluid mt-5">
@@ -54,4 +55,16 @@ include('connect.php');
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Sélectionnez le bouton "Valider mes choix" par son ID ou sa classe CSS
+        var boutonValider = document.querySelector(".btn-primary");
+
+        // Ajoutez un gestionnaire d'événement au clic sur le bouton
+        boutonValider.addEventListener("click", function () {
+            // Affichez la popup avec le message
+            alert("Votre demande est bien prise en compte. Bonne navigation sur notre site.");
+        });
+    });
+</script>
 <?php include('footer.php'); ?>
