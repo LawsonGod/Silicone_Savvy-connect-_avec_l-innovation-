@@ -3,11 +3,6 @@ global $dbh;
 include('connect.php');
 require_once ('./inc/outils.php');
 
-if (!estAdministrateur()) {
-    header('Location: index.php');
-    exit;
-}
-
 $message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

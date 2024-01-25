@@ -81,6 +81,10 @@ function construireRequeteSQL($parametres) {
     $conditions = [];
     $parametresRequete = [];
 
+    if (isset($parametres['quantiteStock'])) {
+        $sql .= " WHERE p.quantite_stock = ?";
+    }
+
     if (isset($parametres['motCle']) && !empty($parametres['motCle'])) {
         $motCle = '%' . $parametres['motCle'] . '%';
         $conditions[] = "p.nom LIKE ?";
@@ -129,6 +133,11 @@ function construireRequeteSQL($parametres) {
         $parametresRequete[] = $quantiteStock;
     }
 
+    // Debugging
+    echo "SQL Query: " . $sql . "\n";
+    echo "Parameters Array: ";
+    print_r($parametresRequete);
+
     return [
         'sql' => $sql,
         'parametres' => $parametresRequete
@@ -147,10 +156,9 @@ function construireRequeteSQL($parametres) {
 function obtenirProduitsFiltres($dbh, $parametres) {
     $donneesRequete = construireRequeteSQL($parametres);
     $sql = $donneesRequete['sql'];
-    $parametresRequete = $donneesRequete['parametres'];
 
     $stmt = $dbh->prepare($sql);
-    $stmt->execute($parametresRequete);
+    $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
