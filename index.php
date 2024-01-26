@@ -90,12 +90,16 @@ try {
     }
 
     // Filtrage par note
-    if (!empty($filtreNote) && $filtreNote != 'non-note') {
-        $noteValue = (int)$filtreNote;
-        $conditions[] = "note_moyenne >= ?";
-        $params[] = $noteValue;
-    } elseif ($filtreNote == 'non-note') {
-        $conditions[] = "note_moyenne = 0";
+    if (!empty($filtreNote)) {
+        if ($filtreNote == 'non-note') {
+            // Filtrer les produits non notés (sans note)
+            $conditions[] = "noteMoyenne.note_moyenne IS NULL";
+        } else {
+            // Filtrer les produits avec une note supérieure ou égale à la note sélectionnée
+            $noteValue = (int)$filtreNote;
+            $conditions[] = "noteMoyenne.note_moyenne >= ?";
+            $params[] = $noteValue;
+        }
     }
 
     // Ajouter les conditions à la requête
@@ -113,6 +117,8 @@ try {
             $sql .= ' ORDER BY prix_final ASC';
         } elseif ($orderBy == 'desc') {
             $sql .= ' ORDER BY prix_final DESC';
+        } elseif ($orderBy == 'desc_note') {
+            $sql .= ' ORDER BY note_moyenne DESC, produits.id ASC';
         }
     } else {
         $sql .= ' ORDER BY produits.id ASC';
@@ -185,6 +191,7 @@ $dbh = null;
                         <option value="">Par défaut</option>
                         <option value="asc" <?php echo $orderBy == 'asc' ? 'selected' : ''; ?>>Croissant</option>
                         <option value="desc" <?php echo $orderBy == 'desc' ? 'selected' : ''; ?>>Décroissant</option>
+                        <option value="desc_note" <?php echo $orderBy == 'desc_note' ? 'selected' : ''; ?>>Note</option>
                     </select>
                 </div>
 
