@@ -159,14 +159,20 @@ function construireRequeteSQL($parametres) {
     $conditions = [];
     $parametresRequete = [];
 
-    if (isset($parametres['quantiteStock'])) {
-        $sql .= " WHERE p.quantite_stock = ?";
-    }
-
     if (isset($parametres['motCle']) && !empty($parametres['motCle'])) {
         $motCle = '%' . $parametres['motCle'] . '%';
         $conditions[] = "p.nom LIKE ?";
         $parametresRequete[] = $motCle;
+    }
+
+    if (isset($parametres['filtreQuantiteStock']) && !empty($parametres['filtreQuantiteStock'])) {
+        $conditions[] = "p.quantite_stock >= ?";
+        $parametresRequete[] = $parametres['filtreQuantiteStock'];
+    }
+
+    if (isset($parametres['filtreRemise']) && !empty($parametres['filtreRemise'])) {
+        $conditions[] = "pr.pourcentage_remise >= ?";
+        $parametresRequete[] = $parametres['filtreRemise'];
     }
 
     if (!empty($parametres['filtreMarques'])) {
@@ -195,45 +201,30 @@ function construireRequeteSQL($parametres) {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
-    if (isset($parametres['triMoyenneEvaluations'])) {
-        $triMoyenneEvaluations = $parametres['triMoyenneEvaluations'];
-
-        // Inclure les évaluations et calculer la moyenne
-        $sql .= " LEFT JOIN evaluations ev ON p.id = ev.produit_id";
-        $sql .= " GROUP BY p.id"; // Groupement par produit pour calculer la moyenne
-
-        // Ajouter la clause ORDER BY en utilisant la moyenne des évaluations
-        $sql .= " ORDER BY AVG(ev.note) $triMoyenneEvaluations";
-    }
-
-    if (isset($parametres['triPourcentageRemise'])) {
-        $triPourcentageRemise = $parametres['triPourcentageRemise'];
-        $sql .= " ORDER BY pr.pourcentage_remise $triPourcentageRemise";
-    }
 
     if (isset($parametres['tri'])) {
-        $orderBy = $parametres['tri'];
-        $sql .= $orderBy == 'asc' ? ' ORDER BY Prix ASC' : ' ORDER BY Prix DESC';
+        switch ($parametres['tri']) {
+            case 'asc':
+                $sql .= ' ORDER BY Prix ASC';
+                break;
+            case 'desc':
+                $sql .= ' ORDER BY Prix DESC';
+                break;
+            case 'desc_note':
+                $sql .= ' LEFT JOIN evaluations e ON p.id = e.produit_id';
+                $sql .= ' GROUP BY p.id';
+                $sql .= ' ORDER BY AVG(e.note) DESC';
+                break;
+            case 'quantiteStock_asc':
+                $sql .= ' ORDER BY QuantiteStock ASC';
+                break;
+            case 'quantiteStock_desc':
+                $sql .= ' ORDER BY QuantiteStock DESC';
+                break;
+        }
     } else {
         $sql .= ' ORDER BY p.id ASC';
     }
-
-    if (isset($parametres['quantiteStock'])) {
-        if ($parametres['quantiteStock'] == 'inf') {
-            $quantiteStock = 10;
-            $operator = '<=';
-        } elseif ($parametres['quantiteStock'] == 'sup') {
-            $quantiteStock = 10;
-            $operator = '>';
-        }
-        $conditions[] = "p.quantite_stock $operator ?";
-        $parametresRequete[] = $quantiteStock;
-    }
-
-    // Debugging
-    echo "SQL Query: " . $sql . "\n";
-    echo "Parameters Array: ";
-    print_r($parametresRequete);
 
     return [
         'sql' => $sql,
@@ -254,11 +245,10 @@ function construireRequeteSQL($parametres) {
 function obtenirProduitsFiltres($dbh, $parametres) {
     $donneesRequete = construireRequeteSQL($parametres);
     $sql = $donneesRequete['sql'];
-    $params = !empty($donneesRequete['parametres']) ? $donneesRequete['parametres'] : [];
-
+    $parametresRequete = $donneesRequete['parametres'];
 
     $stmt = $dbh->prepare($sql);
-    $stmt->execute($params);
+    $stmt->execute($parametresRequete);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
