@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('connect.php');
+require_once ('./inc/outils.php');
 
 if (!isset($_SESSION['email'])) {
     header('Location: connexion_inscription.php');

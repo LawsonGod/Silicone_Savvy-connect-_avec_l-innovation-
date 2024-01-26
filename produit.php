@@ -3,57 +3,7 @@
 global $dbh;
 session_start();
 include('connect.php');
-
-/**
- * Fonction pour récupérer les informations d'un produit par son ID.
- *
- * @param PDO $dbh Connexion à la base de données
- * @param int $product_id ID du produit à récupérer
- * @return array|null Les informations du produit ou null s'il n'existe pas
- */
-function obtenirInformationsProduit(PDO $dbh, $product_id) {
-    $sql = 'SELECT produits.image, produits.nom, produits.prix, produits.description, 
-                   marques.nom AS nom_marque, categories.nom AS nom_categorie 
-            FROM produits 
-            INNER JOIN marques ON produits.marque_id = marques.id 
-            INNER JOIN categories ON produits.categorie_id = categories.id 
-            WHERE produits.id = :product_id';
-
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute([':product_id' => $product_id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-/**
- * Fonction pour récupérer la note moyenne d'un produit à partir de ses évaluations.
- *
- * @param PDO $dbh Connexion à la base de données
- * @param int $product_id ID du produit
- * @return float La note moyenne ou 0 si aucune évaluation n'existe
- */
-function obtenirNoteMoyenneProduit(PDO $dbh, $product_id) {
-    $sqlNote = 'SELECT COALESCE(AVG(note), 0) AS note_moyenne FROM evaluations WHERE produit_id = :product_id';
-    $stmtNote = $dbh->prepare($sqlNote);
-    $stmtNote->execute([':product_id' => $product_id]);
-    return $stmtNote->fetch(PDO::FETCH_ASSOC)['note_moyenne'];
-}
-
-/**
- * Fonction pour récupérer les évaluations d'un produit.
- *
- * @param PDO $dbh Connexion à la base de données
- * @param int $product_id ID du produit
- * @return array Les évaluations du produit ou un tableau vide s'il n'y en a pas
- */
-function obtenirEvaluationsProduit(PDO $dbh, $product_id) {
-    $sqlEvaluations = 'SELECT clients.alias, evaluations.note, evaluations.commentaire, evaluations.date_publication 
-                       FROM evaluations 
-                       INNER JOIN clients ON evaluations.utilisateur_id = clients.id 
-                       WHERE evaluations.produit_id = :product_id';
-    $stmtEvaluations = $dbh->prepare($sqlEvaluations);
-    $stmtEvaluations->execute([':product_id' => $product_id]);
-    return $stmtEvaluations->fetchAll(PDO::FETCH_ASSOC);
-}
+require_once ('./inc/outils.php');
 
 // Récupération de l'ID du produit depuis l'URL
 if (isset($_GET['id'])) {

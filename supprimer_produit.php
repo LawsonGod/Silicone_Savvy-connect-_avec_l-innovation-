@@ -2,28 +2,7 @@
 global $dbh;
 session_start();
 include('connect.php');
-
-function supprimerEvaluationsProduit($dbh, $productId) {
-    $sqlDeleteEvaluations = "DELETE FROM evaluations WHERE produit_id = :productId";
-    $stmt = $dbh->prepare($sqlDeleteEvaluations);
-    $stmt->bindParam(":productId", $productId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-function supprimerPromotionProduit($dbh, $productId) {
-    $sqlDeletePromotion = "DELETE FROM promotions WHERE produit_id = :productId";
-    $stmt = $dbh->prepare($sqlDeletePromotion);
-    $stmt->bindParam(":productId", $productId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
-function supprimerProduit($dbh, $productId) {
-    $sqlDeleteProduct = "DELETE FROM produits WHERE id = :productId";
-    $stmt = $dbh->prepare($sqlDeleteProduct);
-    $stmt->bindParam(":productId", $productId, PDO::PARAM_INT);
-    $stmt->execute();
-}
-
+require_once ('./inc/outils.php');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["productId"])) {
     $productId = filter_var($_POST["productId"], FILTER_VALIDATE_INT);

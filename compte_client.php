@@ -5,7 +5,7 @@ session_start();
 // Inclusion du fichier de connexion à la base de données
 global $dbh;
 include('connect.php');
-include('inc/outils.php');
+require_once ('./inc/outils.php');
 
 // Récupération de l'identifiant du client à partir de la session
 $client_id = isset($_SESSION['client_id']) ? $_SESSION['client_id'] : null;
@@ -17,38 +17,21 @@ $evaluations = [];
 
 // Vérification si l'utilisateur est connecté en tant que client
 if ($client_id) {
-    // Récupération des informations du client
-    $stmtClient = $dbh->prepare("SELECT * FROM clients WHERE id = :client_id");
-    $stmtClient->bindParam(':client_id', $client_id, PDO::PARAM_INT);
-    $stmtClient->execute();
-    $clientInfo = $stmtClient->fetch(PDO::FETCH_ASSOC);
+    // Récupération des informations du client en utilisant la fonction getClientInfo
+    $clientInfo = getClientInfo($dbh, $client_id);
 
-    // Récupération des commandes du client
-    $stmtCommandes = $dbh->prepare("SELECT c.*, e.methode, e.cout, e.date_livraison_estimee FROM commandes c LEFT JOIN expeditions e ON c.id = e.commande_id WHERE c.client_id = :client_id");
-    $stmtCommandes->bindParam(':client_id', $client_id, PDO::PARAM_INT);
-    $stmtCommandes->execute();
-    $commandes = $stmtCommandes->fetchAll(PDO::FETCH_ASSOC);
+    // Récupération des commandes du client en utilisant la fonction getCommandesClient
+    $commandes = getCommandesClient($dbh, $client_id);
 
-    // Vérification s'il y a des commandes
-    // if ($stmtCommandes->rowCount() > 0) {
-    //     echo "Commandes trouvées : ". $stmtCommandes->rowCount();
-    // } else {
-    //     echo "Aucune commande trouvée pour l'ID du client : $client_id";
-    // }
-
-    // Récupération des évaluations faites par le client
-    $stmtEvaluations = $dbh->prepare("SELECT e.*, p.nom AS produit_nom FROM evaluations e JOIN produits p ON e.produit_id = p.id WHERE e.utilisateur_id = :client_id");
-    $stmtEvaluations->bindParam(':client_id', $client_id, PDO::PARAM_INT);
-    $stmtEvaluations->execute();
-    $evaluations = $stmtEvaluations->fetchAll(PDO::FETCH_ASSOC);
+    // Récupération des évaluations faites par le client en utilisant la fonction getEvaluationsClient
+    $evaluations = getEvaluationsClient($dbh, $client_id);
 } else {
     echo "L'utilisateur n'est pas connecté.";
     // Redirection vers la page de connexion si l'utilisateur n'est pas connecté
-    // header('Location: login.php');
-    // exit();
+    header('Location: login.php');
+    exit();
 }
 ?>
-
 <?php include('head_header_nav.php'); ?>
 <div class="container">
     <h2>Informations du compte</h2>

@@ -1,6 +1,8 @@
 <?php
 global $dbh;
 session_start();
+include('connect.php');
+require_once ('./inc/outils.php');
 
 // Vérifier si l'utilisateur est connecté en tant qu'administrateur
 if (!isset($_SESSION["user_type"]) || $_SESSION["user_type"] !== "administrateur") {
@@ -8,83 +10,9 @@ if (!isset($_SESSION["user_type"]) || $_SESSION["user_type"] !== "administrateur
     exit;
 }
 
-include('connect.php');
-
-// Fonction pour afficher un message d'erreur
-function afficherMessageErreur($message) {
-    echo '<div class="alert alert-danger">' . htmlspecialchars($message) . '</div>';
-}
-
 $message = '';
 $categories = [];
 $marques = [];
-
-// Fonction pour récupérer la liste des catégories depuis la base de données
-function recupererCategories($dbh) {
-    $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
-    return $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Fonction pour récupérer la liste des marques depuis la base de données
-function recupererMarques($dbh) {
-    $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
-    return $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Fonction pour valider le nom du produit
-function validerNomProduit($nom) {
-    return !preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $nom);
-}
-
-// Fonction pour gérer l'ajout du produit
-function ajouterProduit($dbh, $nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description, $image_extension) {
-    $image_path = './assets/' . $nom . '.' . $image_extension;
-    $allowed_extensions = ["avif", "png", "jpeg", "jpg"];
-    $max_file_size = 3000 * 1024;
-
-    if (!in_array($image_extension, $allowed_extensions) || $_FILES["image"]["size"] > $max_file_size) {
-        return "L'extension du fichier image n'est pas valide ou le fichier est trop volumineux.";
-    }
-
-    if (!move_uploaded_file($_FILES["image"]["tmp_name"], $image_path)) {
-        return "Une erreur s'est produite lors de l'enregistrement de l'image.";
-    }
-
-    $sql = "INSERT INTO produits (nom, categorie_id, marque_id, prix, quantite_stock, description, image) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $dbh->prepare($sql);
-
-    if ($stmt->execute([$nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description, $image_path])) {
-        return "Le produit a été ajouté avec succès.";
-    } else {
-        return "Erreur lors de l'ajout du produit.";
-    }
-}
-
-// Fonction pour ajouter la promotion avec des dates de début et de fin
-function ajouterPromotion($dbh, $produit_id, $pourcentage_remise, $date_debut_promo, $date_fin_promo) {
-    $date_debut = new DateTime($date_debut_promo);
-    $date_fin = new DateTime($date_fin_promo);
-
-    // Vérifier que la date de fin est supérieure à la date de début
-    if ($date_fin <= $date_debut) {
-        return "La date de fin de la promotion doit être après la date de début.";
-    }
-
-    $sql = "INSERT INTO promotions (produit_id, pourcentage_remise, date_debut, date_fin) VALUES (?, ?, ?, ?)";
-    $stmt = $dbh->prepare($sql);
-
-    if ($stmt->execute([$produit_id, $pourcentage_remise, $date_debut_promo, $date_fin_promo])) {
-        return "La promotion a été ajoutée avec succès.";
-    } else {
-        return "Erreur lors de l'ajout de la promotion.";
-    }
-}
-
-// Fonction pour valider que le champ "Prix" est un nombre décimal (double)
-function validerPrix($prix) {
-    // Utilisez is_numeric pour vérifier si la valeur est un nombre
-    return is_numeric($prix);
-}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["ajouter_produit"])) {
     $nom = $_POST["nom"];

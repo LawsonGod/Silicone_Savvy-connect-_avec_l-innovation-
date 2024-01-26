@@ -2,6 +2,7 @@
 global $dbh;
 session_start();
 include('connect.php');
+require_once ('./inc/outils.php');
 ?>
 <?php include('head_header_nav.php'); ?>
 <div class="container mt-5">

@@ -1,6 +1,8 @@
 <?php
 global $dbh;
 session_start();
+include('connect.php');
+require_once ('./inc/outils.php');
 
 // Vérifier si l'utilisateur est connecté en tant qu'administrateur
 if (!isset($_SESSION["user_type"]) || $_SESSION["user_type"] !== "administrateur") {
@@ -8,104 +10,9 @@ if (!isset($_SESSION["user_type"]) || $_SESSION["user_type"] !== "administrateur
     exit;
 }
 
-include('connect.php');
-
 $message = '';
 $categories = [];
 $marques = [];
-
-// Fonction pour récupérer la liste des catégories depuis la base de données
-function recupererCategories($dbh) {
-    $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
-    return $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Fonction pour récupérer la liste des marques depuis la base de données
-function recupererMarques($dbh) {
-    $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
-    return $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Fonction pour valider le nom du produit
-function validerNomProduit($nom) {
-    return !preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $nom);
-}
-
-// Fonction pour valider le prix du produit (nombre décimal)
-function validerPrix($prix) {
-    return is_numeric($prix);
-}
-
-// Fonction pour valider la quantité en stock (nombre entier)
-function validerQuantiteStock($quantite_stock) {
-    return filter_var($quantite_stock, FILTER_VALIDATE_INT) !== false;
-}
-
-// Fonction pour valider le pourcentage de remise (entre 5 et 60)
-function validerPourcentageRemise($pourcentage_remise) {
-    return $pourcentage_remise >= 5 && $pourcentage_remise <= 60;
-}
-
-// Fonction pour gérer la mise à jour du produit
-function editerProduit($dbh, $id, $nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description) {
-    $sql = "UPDATE produits SET nom = ?, categorie_id = ?, marque_id = ?, prix = ?, quantite_stock = ?, description = ? WHERE id = ?";
-    $stmt = $dbh->prepare($sql);
-
-    if ($stmt->execute([$nom, $categorie_id, $marque_id, $prix, $quantite_stock, $description, $id])) {
-        return "Le produit a été mis à jour avec succès.";
-    } else {
-        return "Erreur lors de la mise à jour du produit.";
-    }
-}
-
-// Fonction pour récupérer les détails du produit à éditer
-function recupererDetailsProduit($dbh, $id) {
-    $sql = "SELECT * FROM produits WHERE id = ?";
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-// Fonction pour ajouter ou mettre à jour la promotion du produit
-function gererPromotion($dbh, $id_produit, $pourcentage_remise, $date_debut_promo, $date_fin_promo) {
-    // Vérifier si une promotion existe déjà pour ce produit
-    $sql_check_promo = "SELECT id FROM promotions WHERE produit_id = ?";
-    $stmt_check_promo = $dbh->prepare($sql_check_promo);
-    $stmt_check_promo->execute([$id_produit]);
-    $existing_promo = $stmt_check_promo->fetch(PDO::FETCH_ASSOC);
-
-    if ($existing_promo) {
-        // Mettre à jour la promotion existante
-        $sql_update_promo = "UPDATE promotions SET pourcentage_remise = ?, date_debut = ?, date_fin = ? WHERE produit_id = ?";
-        $stmt_update_promo = $dbh->prepare($sql_update_promo);
-        $stmt_update_promo->execute([$pourcentage_remise, $date_debut_promo, $date_fin_promo, $id_produit]);
-    } else {
-        // Insérer une nouvelle promotion
-        $sql_insert_promo = "INSERT INTO promotions (produit_id, pourcentage_remise, date_debut, date_fin) VALUES (?, ?, ?, ?)";
-        $stmt_insert_promo = $dbh->prepare($sql_insert_promo);
-        $stmt_insert_promo->execute([$id_produit, $pourcentage_remise, $date_debut_promo, $date_fin_promo]);
-    }
-}
-
-// Fonction pour convertir le format de date du formulaire au format de la base de données
-function convertirFormatDateInverse($date) {
-    $elementsDate = explode('/', $date);
-
-    if (count($elementsDate) !== 3) {
-        return false;
-    }
-
-    $nouveauFormat = $elementsDate[2] . '-' . $elementsDate[1] . '-' . $elementsDate[0] . ' 00:00:00';
-
-    return $nouveauFormat;
-}
-
-// Fonction pour convertir le format de date de la base de données au format du formulaire
-function convertirFormatDate($date) {
-    $timestamp = strtotime($date);
-    $nouveauFormat = date('d/m/Y', $timestamp);
-    return $nouveauFormat;
-}
 
 // Récupérer les détails du produit à éditer (si l'ID est défini)
 $details_produit = null;

@@ -4,21 +4,19 @@ global $dbh;
 session_start();
 
 include('connect.php');
+require_once('./inc/outils.php');
 
 // Variables pour les filtres et l'ordre de tri
 $orderBy = '';
 $filtreMarques = isset($_POST['marques']) ? $_POST['marques'] : [];
 $filtreCategories = isset($_POST['categories']) ? $_POST['categories'] : [];
+$filtreRemise = isset($_POST['filtreRemise']) ? $_POST['filtreRemise'] : '';
 $tranchePrix = isset($_POST['tranchePrix']) ? $_POST['tranchePrix'] : '';
 $filtreNote = isset($_POST['filtreNote']) ? $_POST['filtreNote'] : '';
-
-// Fonction pour vérifier si une valeur est cochée
-function isChecked($value, $postArray) {
-    return in_array($value, $postArray) ? 'checked' : '';
-}
+$keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
 
 try {
-// Vérifier la connexion à la base de données
+    // Vérifier la connexion à la base de données
     if ($dbh === null) {
         die("Erreur de connexion à la base de données.");
     }
@@ -27,38 +25,45 @@ try {
     $stmt_cat = $dbh->query('SELECT id, nom FROM categories');
     $categories = $stmt_cat->fetchAll(PDO::FETCH_ASSOC);
 
-// Récupérer les marques depuis la base de données
+    // Récupérer les marques depuis la base de données
     $stmt_marque = $dbh->query('SELECT id, nom FROM marques');
     $marques = $stmt_marque->fetchAll(PDO::FETCH_ASSOC);
 
-// Construction de la requête SQL de base pour les produits
+    // Début de la requête SQL
     $sql = 'SELECT produits.id, produits.image, produits.nom, produits.prix, 
-    COALESCE(AVG(evaluations.note), 0) AS note_moyenne,
-    COALESCE(promotions.pourcentage_remise, 0) AS pourcentage_remise
-    FROM produits 
-    LEFT JOIN evaluations ON produits.id = evaluations.produit_id
-    LEFT JOIN promotions ON produits.id = promotions.produit_id
-    AND NOW() BETWEEN promotions.date_debut AND promotions.date_fin';
+        COALESCE(promotions.pourcentage_remise, 0) AS pourcentage_remise,
+        CASE
+            WHEN promotions.pourcentage_remise IS NOT NULL 
+                THEN produits.prix - (produits.prix * promotions.pourcentage_remise / 100)
+            ELSE produits.prix
+        END AS prix_final,
+        COALESCE(noteMoyenne.note_moyenne, 0) AS note_moyenne
+        FROM produits 
+        LEFT JOIN (SELECT produit_id, AVG(note) AS note_moyenne 
+                   FROM evaluations 
+                   GROUP BY produit_id) AS noteMoyenne ON produits.id = noteMoyenne.produit_id
+        LEFT JOIN promotions ON produits.id = promotions.produit_id
+        AND NOW() BETWEEN promotions.date_debut AND promotions.date_fin';
 
     // Tableaux pour stocker les conditions et les paramètres de requête
     $conditions = [];
     $params = [];
 
-// Filtrage par mot-clé
-    if (isset($_POST['keyword']) && !empty($_POST['keyword'])) {
-        $keyword = '%' . $_POST['keyword'] . '%';
-        $conditions[] = "nom LIKE ?";
+    // Filtrage par mot-clé
+    if (!empty($keyword)) {
+        $keyword = '%' . $keyword . '%';
+        $conditions[] = "produits.nom LIKE ?";
         $params[] = $keyword;
     }
 
-// Filtrage par marques sélectionnées
+    // Filtrage par marques sélectionnées
     if (!empty($filtreMarques)) {
         $marquesPlaceholder = implode(', ', array_fill(0, count($filtreMarques), '?'));
         $conditions[] = "marque_id IN ($marquesPlaceholder)";
         $params = array_merge($params, $filtreMarques);
     }
 
-// Filtrage par catégories sélectionnées
+    // Filtrage par catégories sélectionnées
     if (!empty($filtreCategories)) {
         $categoriesPlaceholder = implode(', ', array_fill(0, count($filtreCategories), '?'));
         $conditions[] = "categorie_id IN ($categoriesPlaceholder)";
@@ -78,96 +83,62 @@ try {
         }
     }
 
-// Ajout des conditions à la requête SQL
+    // Filtrage par pourcentage de remise
+    if (!empty($filtreRemise)) {
+        $conditions[] = "COALESCE(promotions.pourcentage_remise, 0) >= ?";
+        $params[] = $filtreRemise;
+    }
+
+    // Filtrage par note
+    if (!empty($filtreNote)) {
+        if ($filtreNote == 'non-note') {
+            // Filtrer les produits non notés (sans note)
+            $conditions[] = "noteMoyenne.note_moyenne IS NULL";
+        } else {
+            // Filtrer les produits avec une note supérieure ou égale à la note sélectionnée
+            $noteValue = (int)$filtreNote;
+            $conditions[] = "noteMoyenne.note_moyenne >= ?";
+            $params[] = $noteValue;
+        }
+    }
+
+    // Ajouter les conditions à la requête
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
 
-    // Groupement et conditions HAVING pour la note moyenne
-    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix ';
-    $havingConditions = [];
-
-    if ($filtreNote == 'positives') {
-        $havingConditions[] = 'COALESCE(AVG(evaluations.note), 0) > 3';
-    } elseif ($filtreNote == 'negatives') {
-        $havingConditions[] = 'COALESCE(AVG(evaluations.note), 0) < 3';
-    }
-
-// Ajout des conditions HAVING à la requête SQL
-    if (!empty($havingConditions)) {
-        $sql .= ' HAVING ' . implode(' AND ', $havingConditions);
-    }
+    // Ajout de GROUP BY
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix';
 
     // Gestion de l'ordre de tri
     if (isset($_POST['tri'])) {
         $orderBy = $_POST['tri'];
         if ($orderBy == 'asc') {
-            $sql .= ' ORDER BY prix ASC';
+            $sql .= ' ORDER BY prix_final ASC';
         } elseif ($orderBy == 'desc') {
-            $sql .= ' ORDER BY prix DESC';
+            $sql .= ' ORDER BY prix_final DESC';
+        } elseif ($orderBy == 'desc_note') {
+            $sql .= ' ORDER BY note_moyenne DESC, produits.id ASC';
         }
     } else {
-        $sql .= ' ORDER BY id ASC';
+        $sql .= ' ORDER BY produits.id ASC';
     }
 
-// Préparation et exécution de la requête SQL
-    $stmt = $dbh->prepare($sql);
+    // Exécution de la requête SQL
+    $stmt = executerRequeteIndex($dbh, $sql, $params);
 
-    try {
-        if (!$stmt) {
-            throw new PDOException("La préparation de la requête a échoué.");
-        }
+    // Appel de la fonction pour construire la liste de produits
+    $message = construireListeProduitsPourLaPageDAccueil($stmt);
 
-        $stmt->execute($params);
-    } catch (PDOException $e) {
-        echo "Erreur : " . $e->getMessage();
-    }
-
-// Génération de la liste de produits à afficher
-    if ($stmt->rowCount() === 0) {
-        $message = '<p>Aucun résultat trouvé.</p>';
-    } else {
-        $message = '<div class="product-grid">';
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $product_id = $row['id'];
-            $image = $row['image'];
-            $nom = $row['nom'];
-            $prix = $row['prix'];
-            $note_moyenne = round($row['note_moyenne'], 1);
-            $pourcentage_remise = $row['pourcentage_remise'];
-
-            $prix_final = $pourcentage_remise > 0 ? $prix - ($prix * $pourcentage_remise / 100) : $prix;
-            $prix_final_formatte = number_format($prix_final, 2, '.', '');
-
-            $message .= '<div class="product">';
-            $message .= "<a href='produit.php?id=$product_id'>";
-            $message .= "<img src='$image' alt='$nom' class='product-image card-img-top'>";
-            $message .= "<h3>$nom</h3>";
-
-            if ($pourcentage_remise > 0) {
-                $message .= "<p class='prix-original'><s>Prix : $prix €</s></p>";
-                $message .= "<p class='remise'>Remise : $pourcentage_remise%</p>";
-                $message .= "<p class='prix-remise'>Après remise : $prix_final_formatte €</p>";
-            } else {
-                $message .= "<p>Prix : $prix €</p>";
-            }
-
-            $message .= "<p>Note moyenne : $note_moyenne / 5</p>";
-            $message .= '</a>';
-            $message .= '</div>';
-        }
-        $message .= '</div>';
-    }
 } catch (PDOException $e) {
-    $message = 'Une erreur est survenue lors de la récupération des données : ' . $e->getMessage();
+    $message = 'Une erreur PDO est survenue : ' . $e->getMessage() . ' dans le fichier ' . $e->getFile() . ' à la ligne ' . $e->getLine();
 }
 
 // Fermeture de la connexion à la base de données
 $dbh = null;
 ?>
 <?php include('head_header_nav.php');?>
-    <br>
-    <br>
+    <br><br>
 <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
     <ol class="carousel-indicators">
         <li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></li>
@@ -212,22 +183,25 @@ $dbh = null;
     <div class="row">
         <div class="col-md-4">
             <h2>Options de Tri et Recherche</h2>
-
+            <br><br>
+            <h4>Trier par :</h4>
             <form method="post" class="mb-3">
                 <div class="form-group mb-2">
                     <select id="tri" name="tri" class="form-control">
                         <option value="">Par défaut</option>
                         <option value="asc" <?php echo $orderBy == 'asc' ? 'selected' : ''; ?>>Croissant</option>
                         <option value="desc" <?php echo $orderBy == 'desc' ? 'selected' : ''; ?>>Décroissant</option>
+                        <option value="desc_note" <?php echo $orderBy == 'desc_note' ? 'selected' : ''; ?>>Note</option>
                     </select>
                 </div>
 
+                <h4>Rechercher sur notre site :</h4>
                 <div class="form-group mb-2">
                     <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Rechercher par mot clé" value="<?php echo isset($_POST['keyword']) ? $_POST['keyword'] : ''; ?>">
                 </div>
 
+                <h4>Prix :</h4>
                 <div class="form-group mb-2">
-                    <label for="tranchePrix" class="form-label">Tranche de Prix:</label>
                     <select id="tranchePrix" name="tranchePrix" class="form-select">
                         <option value="">Tous les prix</option>
                         <option value="0-100" <?php echo (isset($_POST['tranchePrix']) && $_POST['tranchePrix'] == '0-100') ? 'selected' : ''; ?>>0 - 100 €</option>
@@ -237,28 +211,43 @@ $dbh = null;
                     </select>
                 </div>
 
+                <h4>Remise :</h4>
                 <div class="form-group mb-2">
-                    <select id="filtreNote" name="filtreNote" class="form-select">
-                        <option value="">Filtrer par Note</option>
-                        <option value="positives">Positives (> 3)</option>
-                        <option value="negatives">Négatives (&amp; 3)</option>
+                    <select id="filtreRemise" name="filtreRemise" class="form-select">
+                        <option value="">Sélectionnez une remise</option>
+                        <option value="10" <?php echo (isset($_POST['filtreRemise']) && $_POST['filtreRemise'] == '10') ? 'selected' : ''; ?>>10 % de remise ou plus</option>
+                        <option value="20" <?php echo (isset($_POST['filtreRemise']) && $_POST['filtreRemise'] == '20') ? 'selected' : ''; ?>>20 % de remise ou plus</option>
+                        <option value="30" <?php echo (isset($_POST['filtreRemise']) && $_POST['filtreRemise'] == '30') ? 'selected' : ''; ?>>30 % de remise ou plus</option>
+                        <option value="50" <?php echo (isset($_POST['filtreRemise']) && $_POST['filtreRemise'] == '50') ? 'selected' : ''; ?>>50 % de remise ou plus</option>
                     </select>
                 </div>
 
-                <h4>Catégories</h4>
+                <h4>Moyenne des commentaires des clients :</h4>
+                <div class="form-group mb-2">
+                    <select id="filtreNote" name="filtreNote" class="form-select">
+                        <option value="">Toutes les notes</option>
+                        <option value="1" <?php echo ($filtreNote == '1') ? 'selected' : ''; ?>>1 et plus</option>
+                        <option value="2" <?php echo ($filtreNote == '2') ? 'selected' : ''; ?>>2 et plus</option>
+                        <option value="3" <?php echo ($filtreNote == '3') ? 'selected' : ''; ?>>3 et plus</option>
+                        <option value="4" <?php echo ($filtreNote == '4') ? 'selected' : ''; ?>>4 et plus</option>
+                        <option value="non-note" <?php echo ($filtreNote == 'non-note') ? 'selected' : ''; ?>>Non noté</option>
+                    </select>
+                </div>
+
+                <h4>Catégories :</h4>
                 <?php foreach ($categories as $categorie): ?>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="categories[]" value="<?php echo $categorie['id']; ?>" <?php echo isChecked($categorie['id'], $filtreCategories); ?>>
+                        <input class="form-check-input" type="checkbox" name="categories[]" value="<?php echo $categorie['id']; ?>" <?php echo estCochee($categorie['id'], $filtreCategories); ?>>
                         <label class="form-check-label">
                             <?php echo htmlspecialchars($categorie['nom']); ?>
                         </label>
                     </div>
                 <?php endforeach; ?>
 
-                <h4>Marques</h4>
+                <h4>Marques :</h4>
                 <?php foreach ($marques as $marque): ?>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="marques[]" value="<?php echo $marque['id']; ?>" <?php echo isChecked($marque['id'], $filtreMarques); ?>>
+                        <input class="form-check-input" type="checkbox" name="marques[]" value="<?php echo $marque['id']; ?>" <?php echo estCochee($marque['id'], $filtreMarques); ?>>
                         <label class="form-check-label">
                             <?php echo htmlspecialchars($marque['nom']); ?>
                         </label>
@@ -276,6 +265,7 @@ $dbh = null;
 
         <div class="col-md-8">
             <h2>Liste des Produits</h2>
+            <br><br>
             <?php echo $message; ?>
         </div>
     </div>
