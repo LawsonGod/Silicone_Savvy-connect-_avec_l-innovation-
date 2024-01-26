@@ -21,6 +21,84 @@ function estCochee($valeur, $tableauPost) {
 }
 
 /**
+ * Fonction pour construire la liste de produits à afficher sur la page d'accueil.
+ *
+ * Cette fonction prend un objet PDOStatement contenant les résultats de la requête SQL
+ * et construit une liste de produits à afficher.
+ *
+ * @param PDOStatement $stmt Objet PDOStatement contenant les résultats de la requête SQL.
+ * @return string Une chaîne HTML contenant la liste des produits ou un message si aucun résultat n'est trouvé.
+ */
+function construireListeProduitsPourLaPageDAccueil($stmt) {
+    if (!$stmt) {
+        return '<p>Une erreur s\'est produite lors de la récupération des données.</p>';
+    }
+    $message = '';
+    if ($stmt->rowCount() === 0) {
+        $message = '<p>Aucun résultat trouvé.</p>';
+    } else {
+        $message = '<div class="product-grid">';
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $product_id = $row['id'];
+            $image = $row['image'];
+            $nom = $row['nom'];
+            $prix = $row['prix'];
+            $note_moyenne = round($row['note_moyenne'], 1);
+            $pourcentage_remise = $row['pourcentage_remise'];
+
+            $prix_final = $pourcentage_remise > 0 ? $prix - ($prix * $pourcentage_remise / 100) : $prix;
+            $prix_final_formatte = number_format($prix_final, 2, '.', '');
+
+            $message .= '<div class="product">';
+            $message .= "<a href='produit.php?id=$product_id'>";
+            $message .= "<img src='$image' alt='$nom' class='product-image card-img-top'>";
+            $message .= "<h3>$nom</h3>";
+
+            if ($pourcentage_remise > 0) {
+                $message .= "<p class='prix-original'><s>Prix : $prix €</s></p>";
+                $message .= "<p class='remise'>Remise : $pourcentage_remise%</p>";
+                $message .= "<p class='prix-remise'>Après remise : $prix_final_formatte €</p>";
+            } else {
+                $message .= "<p>Prix : $prix €</p>";
+            }
+
+            $message .= "<p>Note moyenne : $note_moyenne / 5</p>";
+            $message .= '</a>';
+            $message .= '</div>';
+        }
+        $message .= '</div>';
+    }
+    return $message;
+}
+
+/**
+ * Fonction pour exécuter une requête SQL avec des paramètres.
+ *
+ * Cette fonction prend une connexion PDO, une requête SQL et des paramètres,
+ * prépare la requête avec les paramètres et l'exécute. Elle renvoie un objet PDOStatement
+ * contenant les résultats de la requête.
+ *
+ * @param PDO $dbh Connexion PDO à la base de données.
+ * @param string $sql Requête SQL à exécuter.
+ * @param array $params Tableau des paramètres à lier à la requête.
+ * @return PDOStatement|false Retourne un objet PDOStatement en cas de succès, false en cas d'erreur.
+ */
+function executerRequeteIndex($dbh, $sql, $params) {
+    $stmt = $dbh->prepare($sql);
+    try {
+        if (!$stmt) {
+            throw new PDOException("La préparation de la requête a échoué.");
+        }
+        $stmt->execute($params);
+        return $stmt;
+    } catch (PDOException $e) {
+        echo "Erreur : " . $e->getMessage();
+        return false;
+    }
+}
+
+
+/**
  * Récupère toutes les catégories de la base de données.
  *
  * @param PDO $dbh Le gestionnaire de connexion à la base de données.
@@ -53,7 +131,7 @@ function obtenirMarques($dbh) {
  *
  * @param array $parametres Un tableau associatif contenant les critères de filtrage pour les produits.
  *                          Ces critères peuvent inclure des éléments comme des mots clés, des filtres par marque, catégorie,
- *                          tranche de prix, tri et quantité en stock.
+ *                          tranche de prix, tri, quantité en stock, pourcentage de remise et moyenne des évaluations des clients.
  *
  * @return array Retourne un tableau contenant la requête SQL construite et les paramètres associés.
  *               - 'sql' : La chaîne de la requête SQL générée.
@@ -117,6 +195,21 @@ function construireRequeteSQL($parametres) {
     if (!empty($conditions)) {
         $sql .= ' WHERE ' . implode(' AND ', $conditions);
     }
+    if (isset($parametres['triMoyenneEvaluations'])) {
+        $triMoyenneEvaluations = $parametres['triMoyenneEvaluations'];
+
+        // Inclure les évaluations et calculer la moyenne
+        $sql .= " LEFT JOIN evaluations ev ON p.id = ev.produit_id";
+        $sql .= " GROUP BY p.id"; // Groupement par produit pour calculer la moyenne
+
+        // Ajouter la clause ORDER BY en utilisant la moyenne des évaluations
+        $sql .= " ORDER BY AVG(ev.note) $triMoyenneEvaluations";
+    }
+
+    if (isset($parametres['triPourcentageRemise'])) {
+        $triPourcentageRemise = $parametres['triPourcentageRemise'];
+        $sql .= " ORDER BY pr.pourcentage_remise $triPourcentageRemise";
+    }
 
     if (isset($parametres['tri'])) {
         $orderBy = $parametres['tri'];
@@ -125,10 +218,14 @@ function construireRequeteSQL($parametres) {
         $sql .= ' ORDER BY p.id ASC';
     }
 
-    // Filtre pour la quantité en stock
     if (isset($parametres['quantiteStock'])) {
-        $quantiteStock = $parametres['quantiteStock'] == 'inf' ? 10 : 11;
-        $operator = $parametres['quantiteStock'] == 'inf' ? '<=' : '>=';
+        if ($parametres['quantiteStock'] == 'inf') {
+            $quantiteStock = 10;
+            $operator = '<=';
+        } elseif ($parametres['quantiteStock'] == 'sup') {
+            $quantiteStock = 10;
+            $operator = '>';
+        }
         $conditions[] = "p.quantite_stock $operator ?";
         $parametresRequete[] = $quantiteStock;
     }
@@ -145,20 +242,23 @@ function construireRequeteSQL($parametres) {
 }
 
 /**
- * Récupère les produits filtrés en fonction des critères de recherche spécifiés.
+ * Obtient une liste de produits filtrés en fonction des paramètres spécifiés.
  *
- * @param PDO $dbh Le gestionnaire de connexion à la base de données.
- * @param array $parametres Un tableau associatif contenant les critères de filtrage.
- *                          Ces critères peuvent inclure des éléments tels que mot clé, catégorie, marque, prix, etc.
+ * Cette fonction utilise une requête SQL générée en fonction des paramètres de filtre
+ * pour récupérer les produits correspondants dans la base de données.
  *
- * @return array Retourne un tableau associatif de tous les produits qui correspondent aux critères de filtrage.
+ * @param PDO $dbh L'objet PDO représentant la connexion à la base de données.
+ * @param array $parametres Un tableau associatif contenant les paramètres de filtre.
+ * @return array Un tableau contenant les produits filtrés sous forme de tableau associatif.
  */
 function obtenirProduitsFiltres($dbh, $parametres) {
     $donneesRequete = construireRequeteSQL($parametres);
     $sql = $donneesRequete['sql'];
+    $params = !empty($donneesRequete['parametres']) ? $donneesRequete['parametres'] : [];
+
 
     $stmt = $dbh->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
