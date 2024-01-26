@@ -142,10 +142,10 @@ $produits = obtenirProduitsFiltres($dbh, $parametresFiltres);
             <div class="col-md-8">
                 <h1>Liste des Produits</h1>
                 <a href="./ajouter_produit.php" class="btn btn-primary">Ajouter un Produit</a>
-                <a href="./ajouter_categorie.php" class="btn btn-primary">Ajouter une Catégorie</a>
-                <a href="./ajouter_marque.php" class="btn btn-primary">Ajouter une Marque</a>
-                <a href="./liste_des_clients.php" class="btn btn-primary">Voir la Liste des Clients</a>
-                <a href="./liste_des_commandes.php" class="btn btn-primary">Voir la Liste des Commandes</a>
+                <a href="./ajouter_categorie.php" class="btn btn-secondary">Ajouter une Catégorie</a>
+                <a href="./ajouter_marque.php" class="btn btn-secondary">Ajouter une Marque</a>
+                <a href="./liste_des_clients.php" class="btn btn-info">Voir la Liste des Clients</a>
+                <a href="./liste_des_commandes.php" class="btn btn-info">Voir la Liste des Commandes</a>
                 <table class="table table-bordered">
                     <thead>
                     <tr>

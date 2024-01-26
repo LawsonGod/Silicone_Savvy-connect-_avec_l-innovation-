@@ -94,17 +94,24 @@ echo '</main>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     $(document).ready(function(){
-        $("#darkModeToggle").change(function() {
-            console.log("Checkbox change event triggered");
-            if ($(this).is(":checked")) {
-                console.log("Dark mode enabled");
-                $("main").addClass("dark-mode"); 
-            } else {
-                console.log("Dark mode disabled");
-                $("main").removeClass("dark-mode"); 
-            }
-        });
+    if (localStorage.getItem("darkMode") === "enabled") {
+        console.log("Dark mode enabled");
+        $("body").addClass("dark-mode");
+        $("#darkModeToggle").prop("checked", true);
+    }
+    $("#darkModeToggle").change(function() {
+        console.log("Checkbox change event triggered");
+        if ($(this).is(":checked")) {
+            console.log("Dark mode enabled");
+            $("body").addClass("dark-mode"); 
+            localStorage.setItem("darkMode", "enabled");
+        } else {
+            console.log("Dark mode disabled");
+            $("body").removeClass("dark-mode"); 
+            localStorage.setItem("darkMode", "disabled");
+        }
     });
+});
 </script>
 </body>
 </html>';
