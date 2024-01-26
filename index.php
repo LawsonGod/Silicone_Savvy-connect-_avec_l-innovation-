@@ -108,7 +108,7 @@ try {
     }
 
     // Ajout de GROUP BY
-    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix';
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix, promotions.pourcentage_remise';
 
     // Gestion de l'ordre de tri
     if (isset($_POST['tri'])) {
