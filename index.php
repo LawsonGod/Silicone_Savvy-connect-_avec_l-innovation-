@@ -84,7 +84,7 @@ try {
     }
 
     // Groupement et conditions HAVING pour la note moyenne
-    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix ';
+    $sql .= ' GROUP BY produits.id, produits.image, produits.nom, produits.prix, promotions.pourcentage_remise ';
     $havingConditions = [];
 
     if ($filtreNote == 'positives') {

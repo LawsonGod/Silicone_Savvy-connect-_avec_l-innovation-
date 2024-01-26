@@ -143,6 +143,7 @@ a:hover {
 }
 
 /* Style du carousel */
+
 .carousel-inner img {
     height: 700px;
     width: auto;
@@ -167,4 +168,12 @@ a:hover {
 
 .carousel-indicators {
     display: none;
+}
+
+/* Navbar*/
+
+.sticky-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
