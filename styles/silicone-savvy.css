@@ -13,31 +13,42 @@ main.dark-mode {
     color: #f1f4f7;
 } */
 
+/* Navbar*/
+
+.sticky-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #21313d;
+    color: #f1f4f7;
+    transition: background-color 0.3s, color 0.3s;
+}
+
 body.dark-mode {
-    background-color: #21313d; /* Arrière-plan sombre */
-    color: #f1f4f7; /* Texte clair */
+    background-color: #21313d;
+    color: #f1f4f7;
 }
 
 body.dark-mode a {
-    color: #9ad0ec; /* Liens en mode sombre */
+    color: #9ad0ec;
 }
 
 body.dark-mode header, body.dark-mode footer {
-    background-color: #1a252f; /* Couleur de fond différente pour le header et footer */
+    background-color: #1a252f;
 }
 body.dark-mode .product a:hover {
     color: white;
 }
 body.dark-mode .navbar .dropdown-menu {
-    background-color: black; /* Fond noir pour les menus déroulants */
-    color: white; /* Texte blanc */
+    background-color: black;
+    color: white;
 }
 body.dark-mode .navbar .dropdown-menu a {
-    color: white; /* Liens blancs dans les menus déroulants */
+    color: white;
 }
 
 body.dark-mode .navbar .dropdown-menu a:hover {
-    color: #21313d; /* Couleur des liens au survol (ajuster au besoin) */
+    color: #21313d;
 }
 
 h1 {
@@ -196,12 +207,4 @@ a:hover {
 
 .carousel-indicators {
     display: none;
-}
-
-/* Navbar*/
-
-.sticky-navbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
 }
